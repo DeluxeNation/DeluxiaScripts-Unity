@@ -139,6 +139,14 @@ namespace Deluxia.Unity{
             T.color = new Color(T.color.r,T.color.g,T.color.b,fadeIn?1:0);
 
         }
+        /// <summary>
+        /// WARNING!! EXPERIMENTAL!!
+        /// Converts a 2D sprite to a UI Image
+        /// </summary>
+        /// <param name="sprite"></param>
+        /// <param name="parent"></param>
+        /// <param name="copyChildren"></param>
+        /// <returns></returns>
         public static Image ConvertSpriteToImage(this SpriteRenderer sprite,Transform parent,bool copyChildren) {
             if (sprite == null || parent == null) return null;
             GameObject toImage = Object.Instantiate(sprite,parent).gameObject;
@@ -162,36 +170,32 @@ namespace Deluxia.Unity{
             return toImage.GetComponent<Image>();
 
 		}
-        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int rowLength,int totalInGrid,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
-            if(totalInGrid == 0 || rowLength == 0){
+        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
+            if(rowLength == 0 || columnLength == 0){
                 return null;
             }
-            // Debug.Log(totalInGrid);
-            // Debug.Log(rowLength);
-            if(rowLength > totalInGrid){
-                rowLength = totalInGrid;
-            }
-            RectTransform[,] toSend = new RectTransform[(totalInGrid/(rowLength+1))+1,rowLength];
+            int totalInGrid = rowLength * columnLength;
+            RectTransform[,] toSend = new RectTransform[rowLength,columnLength];
             int total = 0;
-            for (int i = 0; total < totalInGrid; i++){
+            //Debug.Log(original.localPosition);
+            for (int i = 0; i < columnLength; i++){
                 for (int j = 0;j < rowLength; j++){
                     total++;
                     if(total > totalInGrid){
                         toSend[i,j] = null;
                         continue;
                     }
-                    //Debug.Log(total);
-                    toSend[i,j] = GameObject.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
-                    toSend[i,j].anchoredPosition = new Vector3(original.localPosition.x+(moveByX*(j+(!moveToOriginal ||(!destroyOriginal&& i==0)?1:0))),original.localPosition.y+(moveByY*i));
+                    toSend[j,i] = GameObject.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
+                    toSend[j,i].anchoredPosition = new Vector3(original.anchoredPosition.x+(moveByX*(j+(!moveToOriginal ||(!destroyOriginal&& i==0)?1:0))),original.anchoredPosition.y+(moveByY*i));
                     switch(nameT){
                         case CloneNameType.total:
-                        toSend[i,j].gameObject.name = ""+(total-1);
+                        toSend[j,i].gameObject.name = ""+(total-1);
                         break;
                         case CloneNameType.grid:
-                        toSend[i,j].gameObject.name = "["+i+","+j+"]";
+                        toSend[j,i].gameObject.name = "["+j+","+i+"]";
                         break;
                         case CloneNameType.originalName:
-                        toSend[i,j].gameObject.name = original.gameObject.name;
+                        toSend[j,i].gameObject.name = original.gameObject.name;
                         break;
                     }
                 }
@@ -201,18 +205,14 @@ namespace Deluxia.Unity{
             }
             return toSend;
         }
-        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int rowLength,int totalInGrid,float moveByX,float moveByY,bool destroyOriginal){
-            if(totalInGrid == 0 || rowLength == 0){
+        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
+            if(rowLength == 0 || columnLength == 0){
                 return null;
             }
-            Debug.Log(totalInGrid);
-            Debug.Log(rowLength);
-            if(rowLength > totalInGrid){
-                rowLength = totalInGrid;
-            }
+            int totalInGrid = rowLength * columnLength;
             List<RectTransform> toSend = new List<RectTransform>();
             int total = 0;
-            for (int i = 0; total < totalInGrid; i++){
+            for (int i = 0; total < columnLength; i++){
                 for (int j = 0;j < rowLength; j++){
                     total++;
                     if(total > totalInGrid){
