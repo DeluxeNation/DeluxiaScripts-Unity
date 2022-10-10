@@ -175,11 +175,11 @@ namespace Deluxia.Unity{
                 return null;
             }
             int totalInGrid = rowLength * columnLength;
-            RectTransform[,] toSend = new RectTransform[rowLength,columnLength];
+            RectTransform[,] toSend = new RectTransform[columnLength,rowLength];
             int total = 0;
             //Debug.Log(original.localPosition);
-            for (int i = 0; i < columnLength; i++){
-                for (int j = 0;j < rowLength; j++){
+            for (int i = 0; i < rowLength; i++){
+                for (int j = 0;j < columnLength; j++){
                     total++;
                     if(total > totalInGrid){
                         toSend[i,j] = null;
@@ -212,8 +212,8 @@ namespace Deluxia.Unity{
             int totalInGrid = rowLength * columnLength;
             List<RectTransform> toSend = new List<RectTransform>();
             int total = 0;
-            for (int i = 0; total < columnLength; i++){
-                for (int j = 0;j < rowLength; j++){
+            for (int i = 0; total < rowLength; i++){
+                for (int j = 0;j < columnLength; j++){
                     total++;
                     if(total > totalInGrid){
                         continue;
