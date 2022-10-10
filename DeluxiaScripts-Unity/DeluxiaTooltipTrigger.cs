@@ -10,7 +10,7 @@ namespace Deluxia.Unity {
         public virtual void OnPointerEnter(PointerEventData ed){
             if(waitTime == 0) {
                 if(header != "" || content != "") {
-                    DeluxeTooltip.Show(header,content);
+                    DeluxiaTooltip.Show(header,content);
                 }
             }
             else {
@@ -23,12 +23,12 @@ namespace Deluxia.Unity {
         IEnumerator Trigger(){
             yield return new WaitForSeconds(waitTime);
             if(header != "" || content != ""){
-                DeluxeTooltip.Show(header,content);
+                DeluxiaTooltip.Show(header,content);
             }
         }
         public void OnPointerExit(PointerEventData ed){
             StopAllCoroutines();
-            DeluxeTooltip.Hide();
+            DeluxiaTooltip.Hide();
         }
         public void Clear(){
             header = "";
