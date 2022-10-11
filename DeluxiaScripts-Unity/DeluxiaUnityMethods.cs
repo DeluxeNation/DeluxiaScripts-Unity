@@ -6,8 +6,29 @@ using TMPro;
 //using System;
 
 namespace Deluxia.Unity{
+    public enum CloneNameType{
+        /// <summary>
+        /// The name will be set to the total number of objects cloned at the time of this object's creation.
+        /// </summary>
+		total, 
+        /// <summary>
+        /// The name will be set to the position this object is located in on the grid.
+        /// </summary>
+        grid, 
+        /// <summary>
+        /// The name will stay the same.
+        /// </summary>
+        originalName
+	}
     public static class DeluxiaUnityMethods{
         public static MonoBehaviour mainClass;
+        /// <summary>
+        /// This looks at a numeric input field and sets the number if it's too high or too low.
+        /// </summary>
+        /// <param name="input">The input field.</param>
+        /// <param name="min">The lowest number that can be entered.</param>
+        /// <param name="max">The highest number that can be entered.</param>
+        /// <returns>The number the text box was set to.</returns>
         public static int SetTextBox(InputField input,int min,int max){
             int checkNum = 0;
             if(int.TryParse(input.text,out int num)){
@@ -28,7 +49,68 @@ namespace Deluxia.Unity{
                 return checkNum;
             }
         }
+        /// <summary>
+        /// This looks at a numeric input field and sets the number if it's too high or too low.
+        /// </summary>
+        /// <param name="input">The input field.</param>
+        /// <param name="min">The lowest number that can be entered.</param>
+        /// <param name="max">The highest number that can be entered.</param>
+        /// <returns>The number the text box was set to.</returns>
         public static byte SetTextBox(InputField input,byte min,byte max){
+            byte checkNum = 0;
+            if(byte.TryParse(input.text,out byte num)){
+                checkNum = num;
+            }
+            else{
+                return byte.Parse(input.placeholder.GetComponent<Text>().text);
+            }
+            if(checkNum > max){
+                input.text = max+"";
+                return max;
+            }
+            else if(checkNum < min){
+                input.text = min+"";
+                return min;
+            }
+            else{
+                return checkNum;
+            }
+        }
+        /// <summary>
+        /// This looks at a numeric input field and sets the number if it's too high or too low.
+        /// </summary>
+        /// <param name="input">The input field.</param>
+        /// <param name="min">The lowest number that can be entered.</param>
+        /// <param name="max">The highest number that can be entered.</param>
+        /// <returns>The number the text box was set to.</returns>
+        public static int SetTextBox(TMP_InputField input,int min,int max){
+            int checkNum = 0;
+            if(int.TryParse(input.text,out int num)){
+                checkNum = num;
+            }
+            else{
+                return int.Parse(input.placeholder.GetComponent<Text>().text);
+            }
+            if(checkNum > max){
+                input.text = max+"";
+                return max;
+            }
+            else if(checkNum < min){
+                input.text = min+"";
+                return min;
+            }
+            else{
+                return checkNum;
+            }
+        }
+        /// <summary>
+        /// This looks at a numeric input field and sets the number if it's too high or too low.
+        /// </summary>
+        /// <param name="input">The input field.</param>
+        /// <param name="min">The lowest number that can be entered.</param>
+        /// <param name="max">The highest number that can be entered.</param>
+        /// <returns>The number the text box was set to.</returns>
+        public static byte SetTextBox(TMP_InputField input,byte min,byte max){
             byte checkNum = 0;
             if(byte.TryParse(input.text,out byte num)){
                 checkNum = num;
@@ -119,33 +201,47 @@ namespace Deluxia.Unity{
             C.blocksRaycasts = false;
             C.GetComponent<Canvas>().enabled = false;
         }
-        public static IEnumerator FadeTMP(TMP_Text T,float speed,bool fadeIn){
+        /// <summary>
+        /// Fade a Text Mesh Pro object.
+        /// </summary>
+        /// <param name="text">The text to use.</param>
+        /// <param name="speed">Multiply the speed by this amount.</param>
+        /// <param name="fadeIn">Choose if this fades in or out.</param>
+        /// <returns></returns>
+        public static IEnumerator FadeTMP(TMP_Text text,float speed,bool fadeIn){
             float opacity = fadeIn?0f:255f;
             do{
-                T.alpha = opacity/255f;
+                text.alpha = opacity/255f;
                 opacity+=speed*(fadeIn?1:-1);
                 yield return new WaitForSeconds(0.01f);
             }while (opacity < 255 && opacity > 0);
-            T.alpha = fadeIn?1:0;
+            text.alpha = fadeIn?1:0;
 
         }
-        public static IEnumerator FadeImage(UnityEngine.UI.Image T,float speed,bool fadeIn){
+        /// <summary>
+        /// Fade an Image object.
+        /// </summary>
+        /// <param name="img">The image to use.</param>
+        /// <param name="speed">Multiply the speed by this amount.</param>
+        /// <param name="fadeIn">Choose if this fades in or out.</param>
+        /// <returns></returns>
+        public static IEnumerator FadeImage(UnityEngine.UI.Image img,float speed,bool fadeIn){
             float opacity = fadeIn?0f:255f;
             do{
-                T.color = new Color(T.color.r,T.color.g,T.color.b,opacity/255f);
+                img.color = new Color(img.color.r,img.color.g,img.color.b,opacity/255f);
                 opacity+=speed*(fadeIn?1:-1);
                 yield return new WaitForSeconds(0.01f);
             }while (opacity < 255 && opacity > 0);
-            T.color = new Color(T.color.r,T.color.g,T.color.b,fadeIn?1:0);
+            img.color = new Color(img.color.r,img.color.g,img.color.b,fadeIn?1:0);
 
         }
         /// <summary>
         /// WARNING!! EXPERIMENTAL!!
-        /// Converts a 2D sprite to a UI Image
+        /// Converts a 2D sprite to a UI Image.
         /// </summary>
-        /// <param name="sprite"></param>
-        /// <param name="parent"></param>
-        /// <param name="copyChildren"></param>
+        /// <param name="sprite">The sprite to convert to an image.</param>
+        /// <param name="parent">Set the parent of the image.</param>
+        /// <param name="copyChildren">Copy all children from the 2D sprite.</param>
         /// <returns></returns>
         public static Image ConvertSpriteToImage(this SpriteRenderer sprite,Transform parent,bool copyChildren) {
             if (sprite == null || parent == null) return null;
@@ -170,18 +266,32 @@ namespace Deluxia.Unity{
             return toImage.GetComponent<Image>();
 
 		}
-        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
+        /// <summary>
+        /// Creates a grid of RectTransforms.
+        /// </summary>
+        /// <param name="original">The original RectTransform</param>
+        /// <param name="nameT">This changes the name of all the clones to match the name type. Check the enum for more info.</param>
+        /// <param name="rowLength">The number of rows (vertical) in the grid.</param>
+        /// <param name="columnLength">The number of columns (horizontal) in the grid</param>
+        /// <param name="max">The max number of objects in the grid.</param>
+        /// <param name="moveByX">Move the x position this much on every object. Resets on new row.</param>
+        /// <param name="moveByY">Move the y position this much on every new row.</param>
+        /// <param name="destroyOriginal">Destroy the original object when the grid is finished.</param>
+        /// <param name="moveToOriginal">When the x resets on a new row, use the original object's x. If turned of, it will move by "moveByX"</param>
+        /// <returns>A 2D array of all the created RectTransforms. Does not include the original.</returns>
+        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
             if(rowLength == 0 || columnLength == 0){
                 return null;
             }
-            int totalInGrid = rowLength * columnLength;
+            if(max == -1){
+                max = rowLength * columnLength;
+            }
             RectTransform[,] toSend = new RectTransform[columnLength,rowLength];
             int total = 0;
-            //Debug.Log(original.localPosition);
             for (int i = 0; i < rowLength; i++){
                 for (int j = 0;j < columnLength; j++){
                     total++;
-                    if(total > totalInGrid){
+                    if(total > max){
                         toSend[i,j] = null;
                         continue;
                     }
@@ -205,17 +315,32 @@ namespace Deluxia.Unity{
             }
             return toSend;
         }
-        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
+        /// <summary>
+        /// Creates a grid of RectTransforms.
+        /// </summary>
+        /// <param name="original">The original RectTransform</param>
+        /// <param name="nameT">This changes the name of all the clones to match the name type. Check the enum for more info.</param>
+        /// <param name="rowLength">The number of rows (vertical) in the grid.</param>
+        /// <param name="columnLength">The number of columns (horizontal) in the grid</param>
+        /// <param name="max">The max number of objects in the grid.</param>
+        /// <param name="moveByX">Move the x position this much on every object. Resets on new row.</param>
+        /// <param name="moveByY">Move the y position this much on every new row.</param>
+        /// <param name="destroyOriginal">Destroy the original object when the grid is finished.</param>
+        /// <param name="moveToOriginal">When the x resets on a new row, use the original object's x. If turned of, it will move by "moveByX"</param>
+        /// <returns>A list of all the created RectTransforms. Does not include the original.</returns>
+        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
             if(rowLength == 0 || columnLength == 0){
                 return null;
             }
-            int totalInGrid = rowLength * columnLength;
+            if(max == -1){
+                max = rowLength * columnLength;
+            }
             List<RectTransform> toSend = new List<RectTransform>();
             int total = 0;
             for (int i = 0; total < rowLength; i++){
                 for (int j = 0;j < columnLength; j++){
                     total++;
-                    if(total > totalInGrid){
+                    if(total > max){
                         continue;
                     }
                     RectTransform next = GameObject.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
@@ -244,22 +369,32 @@ namespace Deluxia.Unity{
             mainClass = GameObject.Find("GameScriptsManager").GetComponent<MonoBehaviour>();
           }
         }
+        /// <summary>
+        /// Stop playing one audio clip and start playing another. This destroys the original AudioSource
+        /// </summary>
+        /// <param name="audio">The AudioSource to fade out. Use one that's currently playing something.</param>
+        /// <param name="main">Because this executes a coroutine and this class is not a MonoBehaviour, it needs one to start the coroutine.</param>
+        /// <param name="clip">The new audio clip.</param>
+        /// <param name="volume">The volume to end at.</param>
+        /// <returns></returns>
         public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main, AudioClip clip,float volume){
-            //MonoBehaviour main = new MonoBehaviour();
             FindMainClass();
-            //Debug.Log((float)(Settings.GetSettingsChoices().settings["MusicVol"]/100f));
-            mainClass.StartCoroutine(DeluxiaUnityMethods.FadeOut(audio,0,volume,true));
+            mainClass.StartCoroutine(DeluxiaUnityMethods.FadeOutAudio(audio,0,volume,true));
             AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
             audio2.volume = 0;
-            //audio.CloneObject();
-            mainClass.StartCoroutine(DeluxiaUnityMethods.FadeIn(audio2,clip,0,volume));
+            mainClass.StartCoroutine(DeluxiaUnityMethods.FadeInAudio(audio2,clip,0,volume));
             return audio2;
             
         }
-
-        private static IEnumerator FadeOut(AudioSource audio,float delay,float maxVol,bool destroyWhenDone){
+        /// <summary>
+        /// Provides a fade in effect for audio.
+        /// </summary>
+        /// <param name="audio">The AudioSource to fade out. Use one that's currently playing something.</param>
+        /// <param name="delay">Have this wait a bit before executing.</param>
+        /// <param name="maxVol">The volume to end at.</param>
+        /// <param name="destroyWhenDone">Destroy the AudioSource when the fade out is finished.</param>
+        private static IEnumerator FadeOutAudio(AudioSource audio,float delay,float maxVol,bool destroyWhenDone){
             yield return new WaitForSeconds(delay);
-            
             float timeElapsed = 0;
             while (audio.volume > 0) {
                 audio.volume = Mathf.Lerp(maxVol, 0, timeElapsed / 5);
@@ -270,8 +405,15 @@ namespace Deluxia.Unity{
                 Component.Destroy(audio);
             }
         }
-
-        public static IEnumerator FadeIn(AudioSource audio,AudioClip clip,float delay,float maxVol){
+        /// <summary>
+        /// Provides a fade in effect for audio.
+        /// </summary>
+        /// <param name="audio">The AudioSource to fade in. Use one that's not playing anything.</param>
+        /// <param name="clip">The clip to fade in.</param>
+        /// <param name="delay">Have this wait a bit before executing.</param>
+        /// <param name="maxVol">The volume to end at.</param>
+        /// <returns></returns>
+        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float maxVol){
             yield return new WaitForSeconds(delay);
             Debug.Log(maxVol);
             float timeElapsed = 0;
