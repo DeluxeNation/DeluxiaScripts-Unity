@@ -30,7 +30,7 @@ namespace Deluxia.Unity{
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
         public static int SetTextBox(InputField input,int min,int max){
-            int checkNum = 0;
+            int checkNum;
             if(int.TryParse(input.text,out int num)){
                 checkNum = num;
             }
@@ -57,7 +57,7 @@ namespace Deluxia.Unity{
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
         public static byte SetTextBox(InputField input,byte min,byte max){
-            byte checkNum = 0;
+            byte checkNum;
             if(byte.TryParse(input.text,out byte num)){
                 checkNum = num;
             }
@@ -84,7 +84,7 @@ namespace Deluxia.Unity{
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
         public static int SetTextBox(TMP_InputField input,int min,int max){
-            int checkNum = 0;
+            int checkNum;
             if(int.TryParse(input.text,out int num)){
                 checkNum = num;
             }
@@ -271,47 +271,43 @@ namespace Deluxia.Unity{
         /// </summary>
         /// <param name="original">The original RectTransform</param>
         /// <param name="nameT">This changes the name of all the clones to match the name type. Check the enum for more info.</param>
-        /// <param name="rowLength">The number of rows (vertical) in the grid.</param>
-        /// <param name="columnLength">The number of columns (horizontal) in the grid</param>
+        /// <param name="XLength">The number of columns (horizontal) in the grid</param>
+        /// <param name="YLength">The number of rows (vertical) in the grid.</param>
         /// <param name="max">The max number of objects in the grid.</param>
         /// <param name="moveByX">Move the x position this much on every object. Resets on new row.</param>
         /// <param name="moveByY">Move the y position this much on every new row.</param>
         /// <param name="destroyOriginal">Destroy the original object when the grid is finished.</param>
         /// <param name="moveToOriginal">When the x resets on a new row, use the original object's x. If turned of, it will move by "moveByX"</param>
         /// <returns>A 2D array of all the created RectTransforms. Does not include the original.</returns>
-        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
-            if(rowLength == 0 || columnLength == 0){
+        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int XLength,int YLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
+            if(YLength == 0 || XLength == 0){
                 return null;
             }
             if(max == -1){
-                max = rowLength * columnLength;
+                max = YLength * XLength;
             }
-            RectTransform[,] toSend = new RectTransform[columnLength,rowLength];
+            RectTransform[,] toSend = new RectTransform[XLength,YLength];
             int total = 0;
-            for (int i = 0; i < rowLength; i++){
-                for (int j = 0;j < columnLength; j++){
-                    total++;
-                    if(total > max){
-                        toSend[i,j] = null;
-                        continue;
-                    }
-                    toSend[j,i] = GameObject.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
-                    toSend[j,i].anchoredPosition = new Vector3(original.anchoredPosition.x+(moveByX*(j+(!moveToOriginal ||(!destroyOriginal&& i==0)?1:0))),original.anchoredPosition.y+(moveByY*i));
+            for (int y = 0; y < YLength && total < max; y++){
+                for (int x = 0;x < XLength && total < max; x++){
+                    toSend[x,y] = Object.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
+                    toSend[x,y].anchoredPosition = new Vector3(original.anchoredPosition.x+(moveByX*(x+(!moveToOriginal ||(!destroyOriginal&& y==0)?1:0))),original.anchoredPosition.y+(moveByY*y));
                     switch(nameT){
                         case CloneNameType.total:
-                        toSend[j,i].gameObject.name = ""+(total-1);
+                        toSend[x,y].gameObject.name = ""+total;
                         break;
                         case CloneNameType.grid:
-                        toSend[j,i].gameObject.name = "["+j+","+i+"]";
+                        toSend[x,y].gameObject.name = "["+x+","+y+"]";
                         break;
                         case CloneNameType.originalName:
-                        toSend[j,i].gameObject.name = original.gameObject.name;
+                        toSend[x,y].gameObject.name = original.gameObject.name;
                         break;
                     }
+                    total++;
                 }
             }
             if(destroyOriginal){
-                GameObject.Destroy(original.gameObject);
+                Object.Destroy(original.gameObject);
             }
             return toSend;
         }
@@ -320,47 +316,44 @@ namespace Deluxia.Unity{
         /// </summary>
         /// <param name="original">The original RectTransform</param>
         /// <param name="nameT">This changes the name of all the clones to match the name type. Check the enum for more info.</param>
-        /// <param name="rowLength">The number of rows (vertical) in the grid.</param>
-        /// <param name="columnLength">The number of columns (horizontal) in the grid</param>
+        /// <param name="XLength">The number of columns (horizontal) in the grid</param>
+        /// <param name="YLength">The number of rows (vertical) in the grid.</param>
         /// <param name="max">The max number of objects in the grid.</param>
         /// <param name="moveByX">Move the x position this much on every object. Resets on new row.</param>
         /// <param name="moveByY">Move the y position this much on every new row.</param>
         /// <param name="destroyOriginal">Destroy the original object when the grid is finished.</param>
         /// <param name="moveToOriginal">When the x resets on a new row, use the original object's x. If turned of, it will move by "moveByX"</param>
         /// <returns>A list of all the created RectTransforms. Does not include the original.</returns>
-        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int rowLength,int columnLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
-            if(rowLength == 0 || columnLength == 0){
+        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int XLength,int YLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
+            if(YLength == 0 || XLength == 0){
                 return null;
             }
             if(max == -1){
-                max = rowLength * columnLength;
+                max = YLength * XLength;
             }
-            List<RectTransform> toSend = new List<RectTransform>();
-            int total = 0;
-            for (int i = 0; total < rowLength; i++){
-                for (int j = 0;j < columnLength; j++){
-                    total++;
-                    if(total > max){
-                        continue;
-                    }
-                    RectTransform next = GameObject.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
+            List<RectTransform> toSend = new();
+            int total = 1;
+            for (int y = 0; y < YLength && total < max; y++){
+                for (int x = 0;x < XLength && total < max; x++){
+                    RectTransform next = Object.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
                     toSend.Add(next);
-                    next.anchoredPosition = new Vector3(original.localPosition.x+(moveByX*(j+(!destroyOriginal && i==0?1:0))),original.localPosition.y+(moveByY*i));
+                    next.anchoredPosition = new Vector3(original.localPosition.x+(moveByX*(x+(!destroyOriginal && y==0?1:0))),original.localPosition.y+(moveByY*y));
                     switch(nameT){
                         case CloneNameType.total:
-                        next.gameObject.name = ""+(total-1);
+                        next.gameObject.name = ""+total;
                         break;
                         case CloneNameType.grid:
-                        next.gameObject.name = "["+i+","+j+"]";
+                        next.gameObject.name = "["+x+","+y+"]";
                         break;
                         case CloneNameType.originalName:
                         next.gameObject.name = original.gameObject.name;
                         break;
                     }
+                    total++;
                 }
             }
             if(destroyOriginal){
-                GameObject.Destroy(original.gameObject);
+                Object.Destroy(original.gameObject);
             }
             return toSend;
         }
@@ -402,7 +395,7 @@ namespace Deluxia.Unity{
                 yield return new WaitForEndOfFrame();
             }
             if(destroyWhenDone){
-                Component.Destroy(audio);
+                Object.Destroy(audio);
             }
         }
         /// <summary>
