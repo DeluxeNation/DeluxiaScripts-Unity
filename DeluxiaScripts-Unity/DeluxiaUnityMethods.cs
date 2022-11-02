@@ -332,7 +332,7 @@ namespace Deluxia.Unity{
                 max = YLength * XLength;
             }
             List<RectTransform> toSend = new();
-            int total = 1;
+            int total = 0;
             for (int y = 0; y < YLength && total < max; y++){
                 for (int x = 0;x < XLength && total < max; x++){
                     RectTransform next = Object.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
