@@ -418,5 +418,20 @@ namespace Deluxia.Unity{
                 yield return new WaitForEndOfFrame();
             }
         }
+        public static float[] ToFloat(this Vector3 V3) {
+            return new float[] { V3.x,V3.y,V3.z };
+        }
+        public static Vector3 ToRotation(this Vector3 V) {
+            float[]toSend = new float[] { V.x,V.y,V.z };
+            for(int i = 0;i < 3;i++) {
+                while(toSend[i] < 0) {
+                    toSend[i] += 360;
+                }
+                while(toSend[i] > 360) {
+					toSend[i] -= 360;
+				}
+            }
+            return new Vector3(toSend[0],toSend[1],toSend[2]);
+        }
     }
 }
