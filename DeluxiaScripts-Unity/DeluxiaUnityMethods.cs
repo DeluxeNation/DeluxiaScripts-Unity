@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 using TMPro;
 //using System;
 
@@ -134,6 +135,8 @@ namespace Deluxia.Unity{
             float opacityT = 0f;
             float inverseT = 255f;
             CA.GetComponent<Canvas>().enabled = true;
+            CA.interactable = true;
+            CB.interactable = false;
             while (opacityT < 255){
                 //Debug.Log(opacityT);
                 CA.alpha = opacityT/255f;
@@ -146,7 +149,67 @@ namespace Deluxia.Unity{
             CA.alpha = 1;
             CB.alpha = 0;
         }
-        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn){
+
+		public static IEnumerator Move2Rect(RectTransform RA, RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
+            float spot = 0;
+			if(disableOnDone) {
+				RA.gameObject.SetActive(true);
+			}
+			Vector3 middle = RB.anchoredPosition;
+			while(spot <= 1) {
+                //Debug.Log(opacityT);
+                spot += speed;
+                RA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
+				RB.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+            if(disableOnDone) {
+                RB.gameObject.SetActive(false);
+            }
+		}
+		public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+			float spot = 0;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				CA.position = Vector3.Lerp(AStart,AEnd,spot);
+				spot += speed;
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(disableOnDone) {
+				CA.gameObject.SetActive(false);
+			}
+		}
+		public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+			float spot = 0;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
+				spot += speed;
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(disableOnDone) {
+				CA.gameObject.SetActive(false);
+			}
+		}
+		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
+			float spot = 0;
+			CA.GetComponent<Canvas>().enabled = true;
+			CA.blocksRaycasts = true;
+			CB.blocksRaycasts = false;
+			RectTransform CAR = CA.GetComponent<RectTransform>();
+			RectTransform CBR = CB.GetComponent<RectTransform>();
+
+			Vector3 middle = CBR.anchoredPosition;
+			while(spot < 1) {
+				//Debug.Log(opacityT);
+				CAR.anchoredPosition = Vector3.Lerp(AStart,middle,spot);
+				CBR.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
+				spot += speed;
+				yield return new WaitForSeconds(0.01f);
+			}
+			CB.GetComponent<Canvas>().enabled = false;
+		}
+		public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn){
             float opacity = fadeIn?0f:255f;
             C.GetComponent<Canvas>().enabled = true;
             do{
@@ -433,5 +496,26 @@ namespace Deluxia.Unity{
             }
             return new Vector3(toSend[0],toSend[1],toSend[2]);
         }
-    }
+        public static Vector2Int ByteArrayToVector2Int(byte[] data) {
+			int first0 = data.GetIndexOfElement<byte>(0,1);
+			byte[] data2 = data.Take(first0).ToArray();
+			byte[] data3 = data.Skip(first0 + 1).ToArray();
+			return new Vector2Int(DeluxiaMethods.GetSum(data2),DeluxiaMethods.GetSum(data3));
+
+		}
+        public static byte[] Vector2IntToByteArray(this Vector2Int V2) {
+            List<byte> toSend = new List<byte>();
+            toSend.AddRange(DeluxiaSerialize.IntToByteArray(V2.x));
+            toSend.Add(0);
+			toSend.AddRange(DeluxiaSerialize.IntToByteArray(V2.y));
+            return toSend.ToArray();
+		}
+        public static Vector2Int MultiplyEach(this Vector2Int v2,int by) {
+            return new Vector2Int(v2.x * by,v2.y * by);
+        }
+		public static Vector2Int DivideEach(this Vector2Int v2,int by) {
+			return new Vector2Int(v2.x / by,v2.y / by);
+		}
+
+	}
 }

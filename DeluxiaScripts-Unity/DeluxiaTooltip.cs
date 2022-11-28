@@ -21,7 +21,6 @@ namespace Deluxia.Unity {
             }
         }
         public static void Show(string headerText,string contentText) {
-            Cursor.visible = false;
             main.gameObject.SetActive(true);
             main.header.text = headerText == null ? "" : headerText;
             main.content.text = contentText == null ? "" : contentText;
@@ -33,7 +32,8 @@ namespace Deluxia.Unity {
             float pivotX = Mpos.x / Screen.width, pivotY = Mpos.y / Screen.height;
             mainTransform.pivot = new Vector2(pivotX * 1.5f,pivotY * 1.5f);
             mainTransform.position = Mpos;
-        }
+			Cursor.visible = false;
+		}
         public static void Hide() {
             Cursor.visible = true;
             if(main != null) {
