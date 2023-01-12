@@ -167,11 +167,34 @@ namespace Deluxia.Unity{
                 RB.gameObject.SetActive(false);
             }
 		}
-		public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+		public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
+			float spot = 0;
+			while(spot <= 1) {
+                //Debug.Log(opacityT);
+                if(useLocal) {
+                    CA.localPosition = Vector3.Lerp(AStart,AEnd,spot);
+                }
+                else {
+					CA.position = Vector3.Lerp(AStart,AEnd,spot);
+				}
+				spot += speed;
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(useLocal) {
+				CA.localPosition = AEnd;
+			}
+			else {
+				CA.position = AEnd;
+			}
+			if(disableOnDone) {
+				CA.gameObject.SetActive(false);
+			}
+		}
+		public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
 			float spot = 0;
 			while(spot <= 1) {
 				//Debug.Log(opacityT);
-				CA.position = Vector3.Lerp(AStart,AEnd,spot);
+				CA.localScale = Vector3.Lerp(AStart,AEnd,spot);
 				spot += speed;
 				yield return new WaitForSeconds(0.01f);
 			}
@@ -179,12 +202,41 @@ namespace Deluxia.Unity{
 				CA.gameObject.SetActive(false);
 			}
 		}
+		public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
+			float spot = 0;
+			if(disableOnDone) {
+				A.gameObject.SetActive(true);
+			}
+			Vector3 middle = B.position;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				A.position = Vector3.Lerp(AStart,AEnd,spot);
+				B.position = Vector3.Lerp(middle,BEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(disableOnDone) {
+				B.gameObject.SetActive(false);
+			}
+		}
 		public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
 			float spot = 0;
 			while(spot <= 1) {
 				//Debug.Log(opacityT);
-				CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
 				spot += speed;
+				CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(disableOnDone) {
+				CA.gameObject.SetActive(false);
+			}
+		}
+		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
+			float spot = 0;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.anchoredPosition = Vector3.Lerp(CA.anchoredPosition,AEnd,spot);
 				yield return new WaitForSeconds(0.01f);
 			}
 			if(disableOnDone) {
@@ -210,7 +262,8 @@ namespace Deluxia.Unity{
 			CB.GetComponent<Canvas>().enabled = false;
 		}
 		public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn){
-            float opacity = fadeIn?0f:255f;
+			C.blocksRaycasts = fadeIn;
+			float opacity = fadeIn?0f:255f;
             C.GetComponent<Canvas>().enabled = true;
             do{
                 C.alpha = opacity/255f;
@@ -288,7 +341,7 @@ namespace Deluxia.Unity{
         /// <param name="speed">Multiply the speed by this amount.</param>
         /// <param name="fadeIn">Choose if this fades in or out.</param>
         /// <returns></returns>
-        public static IEnumerator FadeImage(UnityEngine.UI.Image img,float speed,bool fadeIn){
+        public static IEnumerator FadeImage(Image img,float speed,bool fadeIn){
             float opacity = fadeIn?0f:255f;
             do{
                 img.color = new Color(img.color.r,img.color.g,img.color.b,opacity/255f);
@@ -298,6 +351,15 @@ namespace Deluxia.Unity{
             img.color = new Color(img.color.r,img.color.g,img.color.b,fadeIn?1:0);
 
         }
+        public static IEnumerator ChangeColor(Graphic graphic,Color endColor,float speed) {
+			float spot = 0;
+			while(spot <= 1) {
+                //Debug.Log(opacityT);
+                spot += speed;
+				graphic.color = Color.Lerp(graphic.color, endColor, spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+		}
         /// <summary>
         /// WARNING!! EXPERIMENTAL!!
         /// Converts a 2D sprite to a UI Image.
