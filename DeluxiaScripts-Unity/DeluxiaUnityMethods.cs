@@ -21,7 +21,7 @@ namespace Deluxia.Unity{
         /// </summary>
         originalName
 	}
-    public static class DeluxiaUnityMethods{
+    public static class DeluxiaUnityMethods {
         public static MonoBehaviour mainClass;
         /// <summary>
         /// This looks at a numeric input field and sets the number if it's too high or too low.
@@ -30,23 +30,23 @@ namespace Deluxia.Unity{
         /// <param name="min">The lowest number that can be entered.</param>
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
-        public static int SetTextBox(InputField input,int min,int max){
+        public static int SetTextBox(InputField input,int min,int max) {
             int checkNum;
-            if(int.TryParse(input.text,out int num)){
+            if(int.TryParse(input.text,out int num)) {
                 checkNum = num;
             }
-            else{
+            else {
                 return int.Parse(input.placeholder.GetComponent<Text>().text);
             }
-            if(checkNum > max){
-                input.text = max+"";
+            if(checkNum > max) {
+                input.text = max + "";
                 return max;
             }
-            else if(checkNum < min){
-                input.text = min+"";
+            else if(checkNum < min) {
+                input.text = min + "";
                 return min;
             }
-            else{
+            else {
                 return checkNum;
             }
         }
@@ -57,23 +57,23 @@ namespace Deluxia.Unity{
         /// <param name="min">The lowest number that can be entered.</param>
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
-        public static byte SetTextBox(InputField input,byte min,byte max){
+        public static byte SetTextBox(InputField input,byte min,byte max) {
             byte checkNum;
-            if(byte.TryParse(input.text,out byte num)){
+            if(byte.TryParse(input.text,out byte num)) {
                 checkNum = num;
             }
-            else{
+            else {
                 return byte.Parse(input.placeholder.GetComponent<Text>().text);
             }
-            if(checkNum > max){
-                input.text = max+"";
+            if(checkNum > max) {
+                input.text = max + "";
                 return max;
             }
-            else if(checkNum < min){
-                input.text = min+"";
+            else if(checkNum < min) {
+                input.text = min + "";
                 return min;
             }
-            else{
+            else {
                 return checkNum;
             }
         }
@@ -84,23 +84,23 @@ namespace Deluxia.Unity{
         /// <param name="min">The lowest number that can be entered.</param>
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
-        public static int SetTextBox(TMP_InputField input,int min,int max){
+        public static int SetTextBox(TMP_InputField input,int min,int max) {
             int checkNum;
-            if(int.TryParse(input.text,out int num)){
+            if(int.TryParse(input.text,out int num)) {
                 checkNum = num;
             }
-            else{
+            else {
                 return int.Parse(input.placeholder.GetComponent<Text>().text);
             }
-            if(checkNum > max){
-                input.text = max+"";
+            if(checkNum > max) {
+                input.text = max + "";
                 return max;
             }
-            else if(checkNum < min){
-                input.text = min+"";
+            else if(checkNum < min) {
+                input.text = min + "";
                 return min;
             }
-            else{
+            else {
                 return checkNum;
             }
         }
@@ -111,38 +111,38 @@ namespace Deluxia.Unity{
         /// <param name="min">The lowest number that can be entered.</param>
         /// <param name="max">The highest number that can be entered.</param>
         /// <returns>The number the text box was set to.</returns>
-        public static byte SetTextBox(TMP_InputField input,byte min,byte max){
+        public static byte SetTextBox(TMP_InputField input,byte min,byte max) {
             byte checkNum = 0;
-            if(byte.TryParse(input.text,out byte num)){
+            if(byte.TryParse(input.text,out byte num)) {
                 checkNum = num;
             }
-            else{
+            else {
                 return byte.Parse(input.placeholder.GetComponent<Text>().text);
             }
-            if(checkNum > max){
-                input.text = max+"";
+            if(checkNum > max) {
+                input.text = max + "";
                 return max;
             }
-            else if(checkNum < min){
-                input.text = min+"";
+            else if(checkNum < min) {
+                input.text = min + "";
                 return min;
             }
-            else{
+            else {
                 return checkNum;
             }
         }
-        public static IEnumerator Fade2Can(CanvasGroup CA,CanvasGroup CB,float speed){
+        public static IEnumerator Fade2Can(CanvasGroup CA,CanvasGroup CB,float speed) {
             float opacityT = 0f;
             float inverseT = 255f;
             CA.GetComponent<Canvas>().enabled = true;
             CA.interactable = true;
             CB.interactable = false;
-            while (opacityT < 255){
+            while(opacityT < 255) {
                 //Debug.Log(opacityT);
-                CA.alpha = opacityT/255f;
-                CB.alpha = inverseT/255f;
-                opacityT+=speed;
-                inverseT-=speed;
+                CA.alpha = opacityT / 255f;
+                CB.alpha = inverseT / 255f;
+                opacityT += speed;
+                inverseT -= speed;
                 yield return new WaitForSeconds(0.01f);
             }
             CB.GetComponent<Canvas>().enabled = false;
@@ -150,169 +150,169 @@ namespace Deluxia.Unity{
             CB.alpha = 0;
         }
 
-		public static IEnumerator Move2Rect(RectTransform RA, RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
+        public static IEnumerator Move2Rect(RectTransform RA,RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
             float spot = 0;
-			if(disableOnDone) {
-				RA.gameObject.SetActive(true);
-			}
-			Vector3 middle = RB.anchoredPosition;
-			while(spot <= 1) {
+            if(disableOnDone) {
+                RA.gameObject.SetActive(true);
+            }
+            Vector3 middle = RB.anchoredPosition;
+            while(spot <= 1) {
                 //Debug.Log(opacityT);
                 spot += speed;
                 RA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
-				RB.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
+                RB.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
+                yield return new WaitForSeconds(0.01f);
+            }
             if(disableOnDone) {
                 RB.gameObject.SetActive(false);
             }
-		}
-		public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
-			float spot = 0;
-			while(spot <= 1) {
+        }
+        public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
+            float spot = 0;
+            while(spot <= 1) {
                 //Debug.Log(opacityT);
                 if(useLocal) {
                     CA.localPosition = Vector3.Lerp(AStart,AEnd,spot);
                 }
                 else {
-					CA.position = Vector3.Lerp(AStart,AEnd,spot);
-				}
-				spot += speed;
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(useLocal) {
-				CA.localPosition = AEnd;
-			}
-			else {
-				CA.position = AEnd;
-			}
-			if(disableOnDone) {
-				CA.gameObject.SetActive(false);
-			}
-		}
-		public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
-			float spot = 0;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				CA.localScale = Vector3.Lerp(AStart,AEnd,spot);
-				spot += speed;
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(disableOnDone) {
-				CA.gameObject.SetActive(false);
-			}
-		}
-		public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
-			float spot = 0;
-			if(disableOnDone) {
-				A.gameObject.SetActive(true);
-			}
-			Vector3 middle = B.position;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				A.position = Vector3.Lerp(AStart,AEnd,spot);
-				B.position = Vector3.Lerp(middle,BEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(disableOnDone) {
-				B.gameObject.SetActive(false);
-			}
-		}
-		public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
-			float spot = 0;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(disableOnDone) {
-				CA.gameObject.SetActive(false);
-			}
-		}
-		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
-			float spot = 0;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				CA.anchoredPosition = Vector3.Lerp(CA.anchoredPosition,AEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(disableOnDone) {
-				CA.gameObject.SetActive(false);
-			}
-		}
-		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
-			float spot = 0;
-			CA.GetComponent<Canvas>().enabled = true;
-			CA.blocksRaycasts = true;
-			CB.blocksRaycasts = false;
-			RectTransform CAR = CA.GetComponent<RectTransform>();
-			RectTransform CBR = CB.GetComponent<RectTransform>();
-
-			Vector3 middle = CBR.anchoredPosition;
-			while(spot < 1) {
-				//Debug.Log(opacityT);
-				CAR.anchoredPosition = Vector3.Lerp(AStart,middle,spot);
-				CBR.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
-				spot += speed;
-				yield return new WaitForSeconds(0.01f);
-			}
-			CB.GetComponent<Canvas>().enabled = false;
-		}
-		public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn){
-			C.blocksRaycasts = fadeIn;
-			float opacity = fadeIn?0f:255f;
-            C.GetComponent<Canvas>().enabled = true;
-            do{
-                C.alpha = opacity/255f;
-                opacity+=speed*(fadeIn?1:-1);
+                    CA.position = Vector3.Lerp(AStart,AEnd,spot);
+                }
+                spot += speed;
                 yield return new WaitForSeconds(0.01f);
-            }while (opacity < 255 && opacity > 0);
-            C.alpha = fadeIn?1:0;
+            }
+            if(useLocal) {
+                CA.localPosition = AEnd;
+            }
+            else {
+                CA.position = AEnd;
+            }
+            if(disableOnDone) {
+                CA.gameObject.SetActive(false);
+            }
+        }
+        public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+            float spot = 0;
+            while(spot <= 1) {
+                //Debug.Log(opacityT);
+                CA.localScale = Vector3.Lerp(AStart,AEnd,spot);
+                spot += speed;
+                yield return new WaitForSeconds(0.01f);
+            }
+            if(disableOnDone) {
+                CA.gameObject.SetActive(false);
+            }
+        }
+        public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
+            float spot = 0;
+            if(disableOnDone) {
+                A.gameObject.SetActive(true);
+            }
+            Vector3 middle = B.position;
+            while(spot <= 1) {
+                //Debug.Log(opacityT);
+                spot += speed;
+                A.position = Vector3.Lerp(AStart,AEnd,spot);
+                B.position = Vector3.Lerp(middle,BEnd,spot);
+                yield return new WaitForSeconds(0.01f);
+            }
+            if(disableOnDone) {
+                B.gameObject.SetActive(false);
+            }
+        }
+        public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+            float spot = 0;
+            while(spot <= 1) {
+                //Debug.Log(opacityT);
+                spot += speed;
+                CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
+                yield return new WaitForSeconds(0.01f);
+            }
+            if(disableOnDone) {
+                CA.gameObject.SetActive(false);
+            }
+        }
+        public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
+            float spot = 0;
+            while(spot <= 1) {
+                //Debug.Log(opacityT);
+                spot += speed;
+                CA.anchoredPosition = Vector3.Lerp(CA.anchoredPosition,AEnd,spot);
+                yield return new WaitForSeconds(0.01f);
+            }
+            if(disableOnDone) {
+                CA.gameObject.SetActive(false);
+            }
+        }
+        public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
+            float spot = 0;
+            CA.GetComponent<Canvas>().enabled = true;
+            CA.blocksRaycasts = true;
+            CB.blocksRaycasts = false;
+            RectTransform CAR = CA.GetComponent<RectTransform>();
+            RectTransform CBR = CB.GetComponent<RectTransform>();
+
+            Vector3 middle = CBR.anchoredPosition;
+            while(spot < 1) {
+                //Debug.Log(opacityT);
+                CAR.anchoredPosition = Vector3.Lerp(AStart,middle,spot);
+                CBR.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
+                spot += speed;
+                yield return new WaitForSeconds(0.01f);
+            }
+            CB.GetComponent<Canvas>().enabled = false;
+        }
+        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn) {
+            C.blocksRaycasts = fadeIn;
+            float opacity = fadeIn ? 0f : 255f;
+            C.GetComponent<Canvas>().enabled = true;
+            do {
+                C.alpha = opacity / 255f;
+                opacity += speed * (fadeIn ? 1 : -1);
+                yield return new WaitForSeconds(0.01f);
+            } while(opacity < 255 && opacity > 0);
+            C.alpha = fadeIn ? 1 : 0;
             C.GetComponent<Canvas>().enabled = fadeIn;
         }
-		public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action method) {
-			float opacity = fadeIn ? 0f : 255f;
-			C.GetComponent<Canvas>().enabled = true;
-			do {
-				C.alpha = opacity / 255f;
-				opacity += speed * (fadeIn ? 1 : -1);
-				yield return new WaitForSeconds(0.01f);
-			} while(opacity < 255 && opacity > 0);
-			C.alpha = fadeIn ? 1 : 0;
-			C.GetComponent<Canvas>().enabled = fadeIn;
+        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action method) {
+            float opacity = fadeIn ? 0f : 255f;
+            C.GetComponent<Canvas>().enabled = true;
+            do {
+                C.alpha = opacity / 255f;
+                opacity += speed * (fadeIn ? 1 : -1);
+                yield return new WaitForSeconds(0.01f);
+            } while(opacity < 255 && opacity > 0);
+            C.alpha = fadeIn ? 1 : 0;
+            C.GetComponent<Canvas>().enabled = fadeIn;
             method();
-		}
-		public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action<string> method,string param) {
-			float opacity = fadeIn ? 0f : 255f;
-			C.GetComponent<Canvas>().enabled = true;
-			do {
-				C.alpha = opacity / 255f;
-				opacity += speed * (fadeIn ? 1 : -1);
-				yield return new WaitForSeconds(0.01f);
-			} while(opacity < 255 && opacity > 0);
-			C.alpha = fadeIn ? 1 : 0;
-			C.GetComponent<Canvas>().enabled = fadeIn;
-			method(param);
-		}
-		public static IEnumerator FadeCanInAndOut(CanvasGroup C,bool blockRaycasts,float speed,float time){
+        }
+        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action<string> method,string param) {
+            float opacity = fadeIn ? 0f : 255f;
+            C.GetComponent<Canvas>().enabled = true;
+            do {
+                C.alpha = opacity / 255f;
+                opacity += speed * (fadeIn ? 1 : -1);
+                yield return new WaitForSeconds(0.01f);
+            } while(opacity < 255 && opacity > 0);
+            C.alpha = fadeIn ? 1 : 0;
+            C.GetComponent<Canvas>().enabled = fadeIn;
+            method(param);
+        }
+        public static IEnumerator FadeCanInAndOut(CanvasGroup C,bool blockRaycasts,float speed,float time) {
             float opacity = 0f;
             C.blocksRaycasts = blockRaycasts;
             C.GetComponent<Canvas>().enabled = true;
-            do{
-                C.alpha = opacity/255f;
-                opacity+=speed;
+            do {
+                C.alpha = opacity / 255f;
+                opacity += speed;
                 yield return new WaitForSeconds(0.01f);
-            }while (opacity < 255 && opacity > 0);
+            } while(opacity < 255 && opacity > 0);
             C.alpha = 1;
             yield return new WaitForSeconds(time);
-            do{
-                C.alpha = opacity/255f;
-                opacity+=speed*-1;
+            do {
+                C.alpha = opacity / 255f;
+                opacity += speed * -1;
                 yield return new WaitForSeconds(0.01f);
-            }while (opacity < 255 && opacity > 0);
+            } while(opacity < 255 && opacity > 0);
             C.alpha = 0;
             C.blocksRaycasts = false;
             C.GetComponent<Canvas>().enabled = false;
@@ -324,14 +324,14 @@ namespace Deluxia.Unity{
         /// <param name="speed">Multiply the speed by this amount.</param>
         /// <param name="fadeIn">Choose if this fades in or out.</param>
         /// <returns></returns>
-        public static IEnumerator FadeTMP(TMP_Text text,float speed,bool fadeIn){
-            float opacity = fadeIn?0f:255f;
-            do{
-                text.alpha = opacity/255f;
-                opacity+=speed*(fadeIn?1:-1);
+        public static IEnumerator FadeTMP(TMP_Text text,float speed,bool fadeIn) {
+            float opacity = fadeIn ? 0f : 255f;
+            do {
+                text.alpha = opacity / 255f;
+                opacity += speed * (fadeIn ? 1 : -1);
                 yield return new WaitForSeconds(0.01f);
-            }while (opacity < 255 && opacity > 0);
-            text.alpha = fadeIn?1:0;
+            } while(opacity < 255 && opacity > 0);
+            text.alpha = fadeIn ? 1 : 0;
 
         }
         /// <summary>
@@ -341,25 +341,25 @@ namespace Deluxia.Unity{
         /// <param name="speed">Multiply the speed by this amount.</param>
         /// <param name="fadeIn">Choose if this fades in or out.</param>
         /// <returns></returns>
-        public static IEnumerator FadeImage(Image img,float speed,bool fadeIn){
-            float opacity = fadeIn?0f:255f;
-            do{
-                img.color = new Color(img.color.r,img.color.g,img.color.b,opacity/255f);
-                opacity+=speed*(fadeIn?1:-1);
+        public static IEnumerator FadeImage(Image img,float speed,bool fadeIn) {
+            float opacity = fadeIn ? 0f : 255f;
+            do {
+                img.color = new Color(img.color.r,img.color.g,img.color.b,opacity / 255f);
+                opacity += speed * (fadeIn ? 1 : -1);
                 yield return new WaitForSeconds(0.01f);
-            }while (opacity < 255 && opacity > 0);
-            img.color = new Color(img.color.r,img.color.g,img.color.b,fadeIn?1:0);
+            } while(opacity < 255 && opacity > 0);
+            img.color = new Color(img.color.r,img.color.g,img.color.b,fadeIn ? 1 : 0);
 
         }
         public static IEnumerator ChangeColor(Graphic graphic,Color endColor,float speed) {
-			float spot = 0;
-			while(spot <= 1) {
+            float spot = 0;
+            while(spot <= 1) {
                 //Debug.Log(opacityT);
                 spot += speed;
-				graphic.color = Color.Lerp(graphic.color, endColor, spot);
-				yield return new WaitForSeconds(0.01f);
-			}
-		}
+                graphic.color = Color.Lerp(graphic.color,endColor,spot);
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
         /// <summary>
         /// WARNING!! EXPERIMENTAL!!
         /// Converts a 2D sprite to a UI Image.
@@ -369,7 +369,7 @@ namespace Deluxia.Unity{
         /// <param name="copyChildren">Copy all children from the 2D sprite.</param>
         /// <returns></returns>
         public static Image ConvertSpriteToImage(this SpriteRenderer sprite,Transform parent,bool copyChildren) {
-            if (sprite == null || parent == null) return null;
+            if(sprite == null || parent == null) return null;
             GameObject toImage = Object.Instantiate(sprite,parent).gameObject;
             Object.Destroy(toImage.GetComponent<SpriteRenderer>());
             if(!copyChildren) {
@@ -381,16 +381,16 @@ namespace Deluxia.Unity{
             }
             toImage.AddComponent<Image>();
             toImage.GetComponent<Image>().sprite = sprite.sprite;
-			toImage.GetComponent<Image>().color = sprite.color;
-			toImage.GetComponent<Image>().enabled = sprite.enabled;
+            toImage.GetComponent<Image>().color = sprite.color;
+            toImage.GetComponent<Image>().enabled = sprite.enabled;
             toImage.GetComponent<Image>().SetNativeSize();
             toImage.GetComponent<RectTransform>().localScale = sprite.transform.lossyScale;
-			//toImage.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
-			//toImage.AddComponent<RectTransform>();
-			toImage.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(sprite.transform.position);
+            //toImage.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+            //toImage.AddComponent<RectTransform>();
+            toImage.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(sprite.transform.position);
             return toImage.GetComponent<Image>();
 
-		}
+        }
         /// <summary>
         /// Creates a grid of RectTransforms.
         /// </summary>
@@ -404,34 +404,34 @@ namespace Deluxia.Unity{
         /// <param name="destroyOriginal">Destroy the original object when the grid is finished.</param>
         /// <param name="moveToOriginal">When the x resets on a new row, use the original object's x. If turned of, it will move by "moveByX"</param>
         /// <returns>A 2D array of all the created RectTransforms. Does not include the original.</returns>
-        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int XLength,int YLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
-            if(YLength == 0 || XLength == 0){
+        public static RectTransform[,] CreateUIGrid(RectTransform original,CloneNameType nameT,int XLength,int YLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal) {
+            if(YLength == 0 || XLength == 0) {
                 return null;
             }
-            if(max == -1){
+            if(max == -1) {
                 max = YLength * XLength;
             }
             RectTransform[,] toSend = new RectTransform[XLength,YLength];
             int total = 0;
-            for (int y = 0; y < YLength && total < max; y++){
-                for (int x = 0;x < XLength && total < max; x++){
+            for(int y = 0;y < YLength && total < max;y++) {
+                for(int x = 0;x < XLength && total < max;x++) {
                     toSend[x,y] = Object.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
-                    toSend[x,y].anchoredPosition = new Vector3(original.anchoredPosition.x+(moveByX*(x+(!moveToOriginal ||(!destroyOriginal&& y==0)?1:0))),original.anchoredPosition.y+(moveByY*y));
-                    switch(nameT){
+                    toSend[x,y].anchoredPosition = new Vector3(original.anchoredPosition.x + (moveByX * (x + (!moveToOriginal || (!destroyOriginal && y == 0) ? 1 : 0))),original.anchoredPosition.y + (moveByY * y));
+                    switch(nameT) {
                         case CloneNameType.total:
-                        toSend[x,y].gameObject.name = ""+total;
-                        break;
+                            toSend[x,y].gameObject.name = "" + total;
+                            break;
                         case CloneNameType.grid:
-                        toSend[x,y].gameObject.name = "["+x+","+y+"]";
-                        break;
+                            toSend[x,y].gameObject.name = "[" + x + "," + y + "]";
+                            break;
                         case CloneNameType.originalName:
-                        toSend[x,y].gameObject.name = original.gameObject.name;
-                        break;
+                            toSend[x,y].gameObject.name = original.gameObject.name;
+                            break;
                     }
                     total++;
                 }
             }
-            if(destroyOriginal){
+            if(destroyOriginal) {
                 Object.Destroy(original.gameObject);
             }
             return toSend;
@@ -449,43 +449,43 @@ namespace Deluxia.Unity{
         /// <param name="destroyOriginal">Destroy the original object when the grid is finished.</param>
         /// <param name="moveToOriginal">When the x resets on a new row, use the original object's x. If turned of, it will move by "moveByX"</param>
         /// <returns>A list of all the created RectTransforms. Does not include the original.</returns>
-        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int XLength,int YLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal){
-            if(YLength == 0 || XLength == 0){
+        public static List<RectTransform> CreateUIGridList(RectTransform original,CloneNameType nameT,int XLength,int YLength,int max,float moveByX,float moveByY,bool destroyOriginal,bool moveToOriginal) {
+            if(YLength == 0 || XLength == 0) {
                 return null;
             }
-            if(max == -1){
+            if(max == -1) {
                 max = YLength * XLength;
             }
             List<RectTransform> toSend = new();
             int total = 0;
-            for (int y = 0; y < YLength && total < max; y++){
-                for (int x = 0;x < XLength && total < max; x++){
+            for(int y = 0;y < YLength && total < max;y++) {
+                for(int x = 0;x < XLength && total < max;x++) {
                     RectTransform next = Object.Instantiate(original.gameObject,original.parent).GetComponent<RectTransform>();
                     toSend.Add(next);
-                    next.anchoredPosition = new Vector3(original.localPosition.x+(moveByX*(x+(!destroyOriginal && y==0?1:0))),original.localPosition.y+(moveByY*y));
-                    switch(nameT){
+                    next.anchoredPosition = new Vector3(original.localPosition.x + (moveByX * (x + (!destroyOriginal && y == 0 ? 1 : 0))),original.localPosition.y + (moveByY * y));
+                    switch(nameT) {
                         case CloneNameType.total:
-                        next.gameObject.name = ""+total;
-                        break;
+                            next.gameObject.name = "" + total;
+                            break;
                         case CloneNameType.grid:
-                        next.gameObject.name = "["+x+","+y+"]";
-                        break;
+                            next.gameObject.name = "[" + x + "," + y + "]";
+                            break;
                         case CloneNameType.originalName:
-                        next.gameObject.name = original.gameObject.name;
-                        break;
+                            next.gameObject.name = original.gameObject.name;
+                            break;
                     }
                     total++;
                 }
             }
-            if(destroyOriginal){
+            if(destroyOriginal) {
                 Object.Destroy(original.gameObject);
             }
             return toSend;
         }
-        private static void FindMainClass(){
-          if(mainClass == null){
-            mainClass = GameObject.Find("GameScriptsManager").GetComponent<MonoBehaviour>();
-          }
+        private static void FindMainClass() {
+            if(mainClass == null) {
+                mainClass = GameObject.Find("GameScriptsManager").GetComponent<MonoBehaviour>();
+            }
         }
         /// <summary>
         /// Stop playing one audio clip and start playing another. This destroys the original AudioSource
@@ -495,14 +495,14 @@ namespace Deluxia.Unity{
         /// <param name="clip">The new audio clip.</param>
         /// <param name="volume">The volume to end at.</param>
         /// <returns></returns>
-        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main, AudioClip clip,float volume){
+        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume) {
             FindMainClass();
             mainClass.StartCoroutine(DeluxiaUnityMethods.FadeOutAudio(audio,0,volume,true));
             AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
             audio2.volume = 0;
             mainClass.StartCoroutine(DeluxiaUnityMethods.FadeInAudio(audio2,clip,0,volume));
             return audio2;
-            
+
         }
         /// <summary>
         /// Provides a fade in effect for audio.
@@ -511,15 +511,15 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <param name="destroyWhenDone">Destroy the AudioSource when the fade out is finished.</param>
-        private static IEnumerator FadeOutAudio(AudioSource audio,float delay,float maxVol,bool destroyWhenDone){
+        private static IEnumerator FadeOutAudio(AudioSource audio,float delay,float maxVol,bool destroyWhenDone) {
             yield return new WaitForSeconds(delay);
             float timeElapsed = 0;
-            while (audio.volume > 0) {
-                audio.volume = Mathf.Lerp(maxVol, 0, timeElapsed / 5);
+            while(audio.volume > 0) {
+                audio.volume = Mathf.Lerp(maxVol,0,timeElapsed / 5);
                 timeElapsed += Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             }
-            if(destroyWhenDone){
+            if(destroyWhenDone) {
                 Object.Destroy(audio);
             }
         }
@@ -531,14 +531,14 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <returns></returns>
-        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float maxVol){
+        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float maxVol) {
             yield return new WaitForSeconds(delay);
             Debug.Log(maxVol);
             float timeElapsed = 0;
             audio.clip = clip;
             audio.Play();
-            while (audio.volume < maxVol) {
-                audio.volume = Mathf.Lerp(0, maxVol, timeElapsed / 5);
+            while(audio.volume < maxVol) {
+                audio.volume = Mathf.Lerp(0,maxVol,timeElapsed / 5);
                 timeElapsed += Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             }
@@ -547,37 +547,87 @@ namespace Deluxia.Unity{
             return new float[] { V3.x,V3.y,V3.z };
         }
         public static Vector3 ToRotation(this Vector3 V) {
-            float[]toSend = new float[] { V.x,V.y,V.z };
+            float[] toSend = new float[] { V.x,V.y,V.z };
             for(int i = 0;i < 3;i++) {
                 while(toSend[i] < 0) {
                     toSend[i] += 360;
                 }
                 while(toSend[i] > 360) {
-					toSend[i] -= 360;
-				}
+                    toSend[i] -= 360;
+                }
             }
             return new Vector3(toSend[0],toSend[1],toSend[2]);
         }
         public static Vector2Int ByteArrayToVector2Int(byte[] data) {
-			int first0 = data.GetIndexOfElement<byte>(0,1);
-			byte[] data2 = data.Take(first0).ToArray();
-			byte[] data3 = data.Skip(first0 + 1).ToArray();
-			return new Vector2Int(DeluxiaMethods.GetSum(data2),DeluxiaMethods.GetSum(data3));
+            int first0 = data.GetIndexOfElement<byte>(0,1);
+            byte[] data2 = data.Take(first0).ToArray();
+            byte[] data3 = data.Skip(first0 + 1).ToArray();
+            return new Vector2Int(DeluxiaMethods.GetSum(data2),DeluxiaMethods.GetSum(data3));
 
-		}
+        }
         public static byte[] Vector2IntToByteArray(this Vector2Int V2) {
             List<byte> toSend = new List<byte>();
             toSend.AddRange(DeluxiaSerialize.IntToByteArray(V2.x));
             toSend.Add(0);
-			toSend.AddRange(DeluxiaSerialize.IntToByteArray(V2.y));
+            toSend.AddRange(DeluxiaSerialize.IntToByteArray(V2.y));
             return toSend.ToArray();
-		}
+        }
         public static Vector2Int MultiplyEach(this Vector2Int v2,int by) {
             return new Vector2Int(v2.x * by,v2.y * by);
         }
-		public static Vector2Int DivideEach(this Vector2Int v2,int by) {
-			return new Vector2Int(v2.x / by,v2.y / by);
-		}
+        public static Vector2Int DivideEach(this Vector2Int v2,int by) {
+            return new Vector2Int(v2.x / by,v2.y / by);
+        }
+        public static List<T> GridNeighbors<T>(this T[,] grid,Vector2Int position,bool ignoreDiagonals) {
+            List<T> toSend = new();
+            if(!ignoreDiagonals) {
+                if(position.x > 0 && position.y > 0) {
+                    toSend.Add(grid[position.x - 1,position.y - 1]);
+                }
+				if(position.x > 0 && position.y < grid.GetLength(1) -1) {
+					toSend.Add(grid[position.x - 1,position.y + 1]);
+				}
+				if(position.x < grid.GetLength(0) -1 && position.y < grid.GetLength(1) -1) {
+					toSend.Add(grid[position.x + 1,position.y + 1]);
+				}
+				if(position.x < grid.GetLength(0) -1 && position.y > 0) {
+					toSend.Add(grid[position.x + 1,position.y - 1]);
+				}
+			}
+            if(position.x > 0) {
+                toSend.Add(grid[position.x - 1,position.y]);
+            }
+            
+            if(position.y < grid.GetLength(1) -1) {
+                toSend.Add(grid[position.x,position.y + 1]);
+            }
+            
+            if(position.x < grid.GetLength(0) -1) {
+                toSend.Add(grid[position.x + 1,position.y]);
+            }
+            
+            if(position.y > 0) {
+                toSend.Add(grid[position.x,position.y - 1]);
+            }
+            return toSend;
 
+        }
+        public static List<T> AllInRange<T>(this T[,] grid,Vector2Int position,int range) {
+            List<T> toSend = new();
+            for(int x = -range;x  < range + 1;x++) {
+                for(int y = -range;y < range+1;y++) {
+                    if(Mathf.Abs(x)+Mathf.Abs(y) <= range && position.x + x > 0 && position.y+y > 0 && position.x+ x < grid.GetLength(0)-1 && position.y+y < grid.GetLength(1)-1) {
+                        if(x == 0 && y == 0) {
+                            continue;
+                        }
+                        toSend.Add(grid[position.x+x,position.y+y]);
+                    }
+                }
+            }
+            return toSend;
+        }
+		public static bool InRange(Vector2Int start,Vector2Int end,int range) {
+            return (Mathf.Abs(end.x - start.x) + Mathf.Abs(end.y - start.y)) <= range;
+        }
 	}
 }
