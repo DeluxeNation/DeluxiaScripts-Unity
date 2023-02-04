@@ -152,7 +152,8 @@ namespace Deluxia.Unity{
 
         public static IEnumerator Move2Rect(RectTransform RA,RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
             float spot = 0;
-            if(disableOnDone) {
+			speed /= 100f;
+			if(disableOnDone) {
                 RA.gameObject.SetActive(true);
             }
             Vector3 middle = RB.anchoredPosition;
@@ -169,7 +170,8 @@ namespace Deluxia.Unity{
         }
         public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
             float spot = 0;
-            while(spot <= 1) {
+			speed /= 100f;
+			while(spot <= 1) {
                 //Debug.Log(opacityT);
                 if(useLocal) {
                     CA.localPosition = Vector3.Lerp(AStart,AEnd,spot);
@@ -192,7 +194,8 @@ namespace Deluxia.Unity{
         }
         public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
             float spot = 0;
-            while(spot <= 1) {
+			speed /= 100f;
+			while(spot <= 1) {
                 //Debug.Log(opacityT);
                 CA.localScale = Vector3.Lerp(AStart,AEnd,spot);
                 spot += speed;
@@ -204,7 +207,8 @@ namespace Deluxia.Unity{
         }
         public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
             float spot = 0;
-            if(disableOnDone) {
+			speed /= 100f;
+			if(disableOnDone) {
                 A.gameObject.SetActive(true);
             }
             Vector3 middle = B.position;
@@ -221,7 +225,8 @@ namespace Deluxia.Unity{
         }
         public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
             float spot = 0;
-            while(spot <= 1) {
+			speed /= 100f;
+			while(spot <= 1) {
                 //Debug.Log(opacityT);
                 spot += speed;
                 CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
@@ -231,8 +236,45 @@ namespace Deluxia.Unity{
                 CA.gameObject.SetActive(false);
             }
         }
-		public static IEnumerator MovePivot(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+		
+		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
+            float spot = 0;
+            Vector3 start = CA.anchoredPosition;
+			speed /= 100f;
+			while(spot <= 1) {
+                //Debug.Log(opacityT);
+                spot += speed;
+                CA.anchoredPosition = Vector3.Lerp(start,AEnd,spot);
+                yield return new WaitForSeconds(0.01f);
+            }
+            if(disableOnDone) {
+                CA.gameObject.SetActive(false);
+            }
+        }
+		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 start,Vector2 AEnd,float speed) {
 			float spot = 0;
+			speed /= 100f;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.sizeDelta = Vector2.Lerp(start,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+		}
+		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 AEnd,float speed) {
+			float spot = 0;
+			Vector2 start = CA.sizeDelta;
+			speed /= 100f;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.sizeDelta = Vector2.Lerp(start,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+		}
+        public static IEnumerator MovePivot(RectTransform CA,Vector2 AStart,Vector2 AEnd,float speed,bool disableOnDone) {
+			float spot = 0;
+			speed /= 100f;
 			while(spot <= 1) {
 				//Debug.Log(opacityT);
 				spot += speed;
@@ -243,21 +285,10 @@ namespace Deluxia.Unity{
 				CA.gameObject.SetActive(false);
 			}
 		}
-		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
-            float spot = 0;
-            while(spot <= 1) {
-                //Debug.Log(opacityT);
-                spot += speed;
-                CA.anchoredPosition = Vector3.Lerp(CA.anchoredPosition,AEnd,spot);
-                yield return new WaitForSeconds(0.01f);
-            }
-            if(disableOnDone) {
-                CA.gameObject.SetActive(false);
-            }
-        }
 		public static IEnumerator MovePivot(RectTransform CA,Vector2 AEnd,float speed,bool disableOnDone) {
             Vector2 AStart = CA.pivot;
 			float spot = 0;
+			speed /= 100f;
 			while(spot <= 1) {
 				//Debug.Log(opacityT);
 				spot += speed;
@@ -270,6 +301,7 @@ namespace Deluxia.Unity{
 		}
 		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
             float spot = 0;
+            speed /= 100f;
             CA.GetComponent<Canvas>().enabled = true;
             CA.blocksRaycasts = true;
             CB.blocksRaycasts = false;
@@ -378,6 +410,7 @@ namespace Deluxia.Unity{
         }
         public static IEnumerator ChangeColor(Graphic graphic,Color endColor,float speed) {
             float spot = 0;
+            speed /= 100;
             while(spot <= 1) {
                 //Debug.Log(opacityT);
                 spot += speed;
