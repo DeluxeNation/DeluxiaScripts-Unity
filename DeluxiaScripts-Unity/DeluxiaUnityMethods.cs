@@ -231,7 +231,19 @@ namespace Deluxia.Unity{
                 CA.gameObject.SetActive(false);
             }
         }
-        public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
+		public static IEnumerator MovePivot(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+			float spot = 0;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.pivot = Vector2.Lerp(AStart,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(disableOnDone) {
+				CA.gameObject.SetActive(false);
+			}
+		}
+		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
             float spot = 0;
             while(spot <= 1) {
                 //Debug.Log(opacityT);
@@ -243,7 +255,20 @@ namespace Deluxia.Unity{
                 CA.gameObject.SetActive(false);
             }
         }
-        public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
+		public static IEnumerator MovePivot(RectTransform CA,Vector2 AEnd,float speed,bool disableOnDone) {
+            Vector2 AStart = CA.pivot;
+			float spot = 0;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.pivot = Vector2.Lerp(AStart,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+			if(disableOnDone) {
+				CA.gameObject.SetActive(false);
+			}
+		}
+		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
             float spot = 0;
             CA.GetComponent<Canvas>().enabled = true;
             CA.blocksRaycasts = true;
@@ -628,6 +653,11 @@ namespace Deluxia.Unity{
         }
 		public static bool InRange(Vector2Int start,Vector2Int end,int range) {
             return (Mathf.Abs(end.x - start.x) + Mathf.Abs(end.y - start.y)) <= range;
+        }
+        public static IEnumerator PlayAndDestroy(AudioSource source) {
+            source.Play();
+            yield return new WaitUntil(() => !source.isPlaying);
+            Object.Destroy(source.gameObject);
         }
 	}
 }
