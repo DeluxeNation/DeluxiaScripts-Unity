@@ -233,17 +233,37 @@ namespace Deluxia.Unity{
         }
         public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
             float spot = 0;
-            while(spot <= 1) {
+            Vector3 start = CA.anchoredPosition;
+			while(spot <= 1) {
                 //Debug.Log(opacityT);
                 spot += speed;
-                CA.anchoredPosition = Vector3.Lerp(CA.anchoredPosition,AEnd,spot);
+                CA.anchoredPosition = Vector3.Lerp(start,AEnd,spot);
                 yield return new WaitForSeconds(0.01f);
             }
             if(disableOnDone) {
                 CA.gameObject.SetActive(false);
             }
         }
-        public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
+		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 start,Vector2 AEnd,float speed) {
+			float spot = 0;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.sizeDelta = Vector2.Lerp(start,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+		}
+		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 AEnd,float speed) {
+			float spot = 0;
+			Vector2 start = CA.sizeDelta;
+			while(spot <= 1) {
+				//Debug.Log(opacityT);
+				spot += speed;
+				CA.sizeDelta = Vector2.Lerp(start,AEnd,spot);
+				yield return new WaitForSeconds(0.01f);
+			}
+		}
+		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
             float spot = 0;
             CA.GetComponent<Canvas>().enabled = true;
             CA.blocksRaycasts = true;
