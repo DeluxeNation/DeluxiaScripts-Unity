@@ -553,12 +553,12 @@ namespace Deluxia.Unity{
         /// <param name="clip">The new audio clip.</param>
         /// <param name="volume">The volume to end at.</param>
         /// <returns></returns>
-        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume) {
+        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,bool destroyWhenDone) {
             FindMainClass();
-            mainClass.StartCoroutine(DeluxiaUnityMethods.FadeOutAudio(audio,0,volume,true));
+            mainClass.StartCoroutine(FadeOutAudio(audio,0,volume,destroyWhenDone));
             AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
             audio2.volume = 0;
-            mainClass.StartCoroutine(DeluxiaUnityMethods.FadeInAudio(audio2,clip,0,volume));
+            mainClass.StartCoroutine(FadeInAudio(audio2,clip,0,volume));
             return audio2;
 
         }
