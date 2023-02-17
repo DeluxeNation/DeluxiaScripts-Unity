@@ -591,7 +591,7 @@ namespace Deluxia.Unity{
         /// <returns></returns>
         public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float maxVol) {
             yield return new WaitForSeconds(delay);
-            Debug.Log(maxVol);
+            //Debug.Log(maxVol);
             float timeElapsed = 0;
             audio.clip = clip;
             audio.Play();
