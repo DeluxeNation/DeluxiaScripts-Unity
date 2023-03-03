@@ -555,11 +555,17 @@ namespace Deluxia.Unity{
         /// <returns></returns>
         public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,bool destroyWhenDone) {
             FindMainClass();
-            mainClass.StartCoroutine(FadeOutAudio(audio,0,volume,destroyWhenDone));
-            AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
-            audio2.volume = 0;
-            mainClass.StartCoroutine(FadeInAudio(audio2,clip,0,volume));
-            return audio2;
+            if(clip == null) {
+                mainClass.StartCoroutine(FadeOutAudio(audio,0,5,false));
+                return audio;
+            }
+            else {
+				mainClass.StartCoroutine(FadeOutAudio(audio,0,5,destroyWhenDone));
+				AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
+				audio2.volume = 0;
+				mainClass.StartCoroutine(FadeInAudio(audio2,clip,0,5,volume));
+				return audio2;
+			}
 
         }
         /// <summary>
@@ -569,16 +575,21 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <param name="destroyWhenDone">Destroy the AudioSource when the fade out is finished.</param>
-        private static IEnumerator FadeOutAudio(AudioSource audio,float delay,float maxVol,bool destroyWhenDone) {
+        public static IEnumerator FadeOutAudio(AudioSource audio,float delay,float speed,bool destroyWhenDone) {
             yield return new WaitForSeconds(delay);
-            float timeElapsed = 0;
-            while(audio.volume > 0) {
-                audio.volume = Mathf.Lerp(maxVol,0,timeElapsed / 5);
-                timeElapsed += Time.deltaTime;
-                yield return new WaitForEndOfFrame();
+            float spot = 0f;
+            float maxVol = audio.volume;
+            speed /= 100;
+            while(spot < 1) {
+                audio.volume = Mathf.Lerp(maxVol,0,spot);
+                spot+=speed;
+                yield return new WaitForSeconds(0.01f);
             }
             if(destroyWhenDone) {
                 Object.Destroy(audio);
+            }
+            else {
+                audio.Stop();
             }
         }
         /// <summary>
@@ -589,18 +600,18 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <returns></returns>
-        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float maxVol) {
-            yield return new WaitForSeconds(delay);
-            //Debug.Log(maxVol);
-            float timeElapsed = 0;
+        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float speed,float maxVol) {
+			yield return new WaitForSeconds(delay);
+			float spot = 0f;
             audio.clip = clip;
             audio.Play();
-            while(audio.volume < maxVol) {
-                audio.volume = Mathf.Lerp(0,maxVol,timeElapsed / 5);
-                timeElapsed += Time.deltaTime;
-                yield return new WaitForEndOfFrame();
-            }
-        }
+			speed /= 100;
+			while(spot < 1) {
+				audio.volume = Mathf.Lerp(0,maxVol,spot);
+				spot += speed;
+				yield return new WaitForEndOfFrame();
+			}
+		}
         public static float[] ToFloat(this Vector3 V3) {
             return new float[] { V3.x,V3.y,V3.z };
         }
