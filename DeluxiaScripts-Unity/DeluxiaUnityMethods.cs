@@ -647,7 +647,10 @@ namespace Deluxia.Unity{
         public static Vector2Int DivideEach(this Vector2Int v2,int by) {
             return new Vector2Int(v2.x / by,v2.y / by);
         }
-        public static List<T> GridNeighbors<T>(this T[,] grid,Vector2Int position,bool ignoreDiagonals) {
+		public static Vector3 Average(this IEnumerable<Vector3> v3) {
+            return new(v3.Average(a=>a.x),v3.Average(a => a.y),v3.Average(a => a.z));
+		}
+		public static List<T> GridNeighbors<T>(this T[,] grid,Vector2Int position,bool ignoreDiagonals) {
             List<T> toSend = new();
             if(!ignoreDiagonals) {
                 if(position.x > 0 && position.y > 0) {
