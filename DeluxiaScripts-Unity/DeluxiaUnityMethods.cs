@@ -302,7 +302,9 @@ namespace Deluxia.Unity{
 		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
             float spot = 0;
             speed /= 100f;
-            CA.GetComponent<Canvas>().enabled = true;
+			if(CA.TryGetComponent(out Canvas canA)) {
+				canA.enabled = true;
+			}
             CA.blocksRaycasts = true;
             CB.blocksRaycasts = false;
             RectTransform CAR = CA.GetComponent<RectTransform>();
@@ -316,48 +318,64 @@ namespace Deluxia.Unity{
                 spot += speed;
                 yield return new WaitForSeconds(0.01f);
             }
-            CB.GetComponent<Canvas>().enabled = false;
+            if(CB.TryGetComponent(out Canvas canB)) {
+                canB.GetComponent<Canvas>().enabled = false;
+            }
         }
         public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn) {
             C.blocksRaycasts = fadeIn;
             float opacity = fadeIn ? 0f : 255f;
-            C.GetComponent<Canvas>().enabled = true;
+            if(C.TryGetComponent(out Canvas can)){
+                can.enabled = true;
+            }
             do {
                 C.alpha = opacity / 255f;
                 opacity += speed * (fadeIn ? 1 : -1);
                 yield return new WaitForSeconds(0.01f);
             } while(opacity < 255 && opacity > 0);
             C.alpha = fadeIn ? 1 : 0;
-            C.GetComponent<Canvas>().enabled = fadeIn;
-        }
+			if(can != null) {
+				can.enabled = fadeIn;
+			}
+		}
         public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action method) {
             float opacity = fadeIn ? 0f : 255f;
-            C.GetComponent<Canvas>().enabled = true;
-            do {
+			if(C.TryGetComponent(out Canvas can)) {
+				can.enabled = true;
+			}
+			do {
                 C.alpha = opacity / 255f;
                 opacity += speed * (fadeIn ? 1 : -1);
                 yield return new WaitForSeconds(0.01f);
             } while(opacity < 255 && opacity > 0);
             C.alpha = fadeIn ? 1 : 0;
-            C.GetComponent<Canvas>().enabled = fadeIn;
-            method();
+			if(can != null) {
+				can.enabled = fadeIn;
+			}
+			method();
         }
         public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action<string> method,string param) {
             float opacity = fadeIn ? 0f : 255f;
-            C.GetComponent<Canvas>().enabled = true;
+            if(C.TryGetComponent(out Canvas can)) {
+				can.enabled = true;
+			}
             do {
                 C.alpha = opacity / 255f;
                 opacity += speed * (fadeIn ? 1 : -1);
                 yield return new WaitForSeconds(0.01f);
             } while(opacity < 255 && opacity > 0);
             C.alpha = fadeIn ? 1 : 0;
-            C.GetComponent<Canvas>().enabled = fadeIn;
-            method(param);
+			if(can != null) {
+				can.enabled = fadeIn;
+			}
+			method(param);
         }
         public static IEnumerator FadeCanInAndOut(CanvasGroup C,bool blockRaycasts,float speed,float time) {
             float opacity = 0f;
             C.blocksRaycasts = blockRaycasts;
-            C.GetComponent<Canvas>().enabled = true;
+            if(C.TryGetComponent(out Canvas can)) {
+				can.enabled = true;
+			}
             do {
                 C.alpha = opacity / 255f;
                 opacity += speed;
@@ -372,8 +390,10 @@ namespace Deluxia.Unity{
             } while(opacity < 255 && opacity > 0);
             C.alpha = 0;
             C.blocksRaycasts = false;
-            C.GetComponent<Canvas>().enabled = false;
-        }
+			if(can != null) {
+                can.enabled = false;
+			}
+		}
         /// <summary>
         /// Fade a Text Mesh Pro object.
         /// </summary>
