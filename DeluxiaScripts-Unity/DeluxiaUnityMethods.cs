@@ -201,7 +201,8 @@ namespace Deluxia.Unity{
                 spot += speed;
                 yield return new WaitForSeconds(0.01f);
             }
-            if(disableOnDone) {
+			CA.localScale = AEnd;
+			if(disableOnDone) {
                 CA.gameObject.SetActive(false);
             }
         }
@@ -725,6 +726,16 @@ namespace Deluxia.Unity{
             source.Play();
             yield return new WaitUntil(() => !source.isPlaying);
             Object.Destroy(source.gameObject);
+        }
+        public static IEnumerator StopAndDestroy(this ParticleSystem system, bool gameObjectToo = false) {
+            system.Stop();
+            yield return new WaitUntil(()=>system.particleCount == 0);
+            if(gameObjectToo) {
+                Object.Destroy(system.gameObject);
+            }
+            else {
+                Object.Destroy(system);
+            }
         }
 	}
 }
