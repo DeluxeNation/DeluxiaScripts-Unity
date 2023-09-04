@@ -229,6 +229,9 @@ namespace Deluxia.Unity{
 			speed /= 100f;
 			while(spot <= 1) {
                 //Debug.Log(opacityT);
+                if(CA == null) {
+                    yield break;
+                }
                 spot += speed;
                 CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
                 yield return new WaitForSeconds(0.01f);
@@ -574,17 +577,18 @@ namespace Deluxia.Unity{
         /// <param name="clip">The new audio clip.</param>
         /// <param name="volume">The volume to end at.</param>
         /// <returns></returns>
-        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,bool destroyWhenDone) {
-            FindMainClass();
+        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,float speed,bool destroyWhenDone) {
             if(clip == null) {
-                mainClass.StartCoroutine(FadeOutAudio(audio,0,5,false));
+                main.StartCoroutine(FadeOutAudio(audio,0,speed,false));
                 return audio;
             }
             else {
-				mainClass.StartCoroutine(FadeOutAudio(audio,0,5,destroyWhenDone));
+				main.StartCoroutine(FadeOutAudio(audio,0,speed,destroyWhenDone));
 				AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
+                audio2.loop = audio.loop;
+                audio2.playOnAwake = false;
 				audio2.volume = 0;
-				mainClass.StartCoroutine(FadeInAudio(audio2,clip,0,5,volume));
+				main.StartCoroutine(FadeInAudio(audio2,clip,0,speed,volume));
 				return audio2;
 			}
 
