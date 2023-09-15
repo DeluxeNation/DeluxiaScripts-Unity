@@ -741,5 +741,22 @@ namespace Deluxia.Unity{
                 Object.Destroy(system);
             }
         }
+		public static IEnumerator Try(IEnumerator enumerator, System.Action doOnException) {
+			while(true) {
+				object current;
+				try {
+					if(enumerator.MoveNext() == false) {
+						break;
+					}
+					current = enumerator.Current;
+				}
+				catch(System.Exception ex) {
+					Debug.LogException(ex);
+                    doOnException.Invoke();
+					yield break;
+				}
+				yield return current;
+			}
+		}
 	}
 }
