@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using System;
+using Object = UnityEngine.Object;
 //using System;
 
 namespace Deluxia.Unity{
@@ -23,6 +25,7 @@ namespace Deluxia.Unity{
 	}
     public static class DeluxiaUnityMethods {
         public static MonoBehaviour mainClass;
+        private static List<AudioSource> PlayAndDestroyList = new();
         /// <summary>
         /// This looks at a numeric input field and sets the number if it's too high or too low.
         /// </summary>
@@ -192,7 +195,7 @@ namespace Deluxia.Unity{
                 CA.gameObject.SetActive(false);
             }
         }
-        public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+        public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone, Action afterDone = null) {
             float spot = 0;
 			speed /= 100f;
 			while(spot <= 1) {
@@ -205,7 +208,8 @@ namespace Deluxia.Unity{
 			if(disableOnDone) {
                 CA.gameObject.SetActive(false);
             }
-        }
+			afterDone?.Invoke();
+		}
         public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
             float spot = 0;
 			speed /= 100f;
@@ -726,10 +730,21 @@ namespace Deluxia.Unity{
 		public static bool InRange(Vector2Int start,Vector2Int end,int range) {
             return (Mathf.Abs(end.x - start.x) + Mathf.Abs(end.y - start.y)) <= range;
         }
+        public static void StopAllPlayAndDestroy() {
+            foreach(AudioSource source in PlayAndDestroyList) {
+                Object.Destroy(source.gameObject);
+            }
+            PlayAndDestroyList.Clear();
+		}
         public static IEnumerator PlayAndDestroy(AudioSource source) {
             source.Play();
-            yield return new WaitUntil(() => !source.isPlaying);
-            Object.Destroy(source.gameObject);
+            PlayAndDestroyList.Add(source);
+            yield return new WaitUntil(() => source == null || !source.isPlaying);
+            yield return new WaitForEndOfFrame();
+            if(source != null) {
+                Object.Destroy(source.gameObject);
+				PlayAndDestroyList.Remove(source);
+			}
         }
         public static IEnumerator StopAndDestroy(this ParticleSystem system, bool gameObjectToo = false) {
             system.Stop();
