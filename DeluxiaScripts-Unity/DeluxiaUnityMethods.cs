@@ -597,6 +597,22 @@ namespace Deluxia.Unity{
 			}
 
         }
+        public static AudioSource ChangeSongMatchDuration(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,float speed,bool destroyWhenDone) {
+            if(clip == null) {
+                main.StartCoroutine(FadeOutAudio(audio,0,speed,false));
+                return audio;
+            }
+            else {
+				main.StartCoroutine(FadeOutAudio(audio,0,speed,destroyWhenDone));
+				AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
+                audio2.loop = audio.loop;
+                audio2.playOnAwake = false;
+				audio2.volume = 0;
+				main.StartCoroutine(FadeInAudio(audio2,clip,0,speed,volume,audio.time));
+				return audio2;
+			}
+
+        }
         /// <summary>
         /// Provides a fade in effect for audio.
         /// </summary>
@@ -610,15 +626,20 @@ namespace Deluxia.Unity{
             float maxVol = audio.volume;
             speed /= 100;
             while(spot < 1) {
+                if(audio == null){
+                    break;
+                }
                 audio.volume = Mathf.Lerp(maxVol,0,spot);
                 spot+=speed;
                 yield return new WaitForSeconds(0.01f);
             }
-            if(destroyWhenDone) {
-                Object.Destroy(audio);
-            }
-            else {
-                audio.Stop();
+            if(audio != null){
+                if(destroyWhenDone) {
+                    Object.Destroy(audio);
+                }
+                else {
+                    audio.Stop();
+                }
             }
         }
         /// <summary>
@@ -629,10 +650,11 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <returns></returns>
-        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float speed,float maxVol) {
+        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float speed,float maxVol, float startTime = 0f) {
 			yield return new WaitForSeconds(delay);
 			float spot = 0f;
             audio.clip = clip;
+            audio.time = startTime;
             audio.Play();
 			speed /= 100;
 			while(spot < 1) {
@@ -745,6 +767,9 @@ namespace Deluxia.Unity{
                 Object.Destroy(source.gameObject);
 				PlayAndDestroyList.Remove(source);
 			}
+        }
+        public static int PlayAndDestroyCount(){
+            return PlayAndDestroyList.Count;
         }
         public static IEnumerator StopAndDestroy(this ParticleSystem system, bool gameObjectToo = false) {
             system.Stop();
