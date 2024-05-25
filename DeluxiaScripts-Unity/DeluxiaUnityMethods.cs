@@ -660,7 +660,7 @@ namespace Deluxia.Unity{
 			while(spot < 1) {
 				audio.volume = Mathf.Lerp(0,maxVol,spot);
 				spot += speed;
-				yield return new WaitForEndOfFrame();
+				yield return new WaitForSeconds(0.01f);
 			}
 		}
         public static float[] ToFloat(this Vector3 V3) {
