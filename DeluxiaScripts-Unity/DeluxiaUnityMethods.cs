@@ -24,7 +24,13 @@ namespace Deluxia.Unity{
         originalName
 	}
     public static class DeluxiaUnityMethods {
-        public static MonoBehaviour mainClass;
+        private static MonoBehaviour _mainClass;
+        public static MonoBehaviour MainClass {get{
+            if(_mainClass == null){
+                FindMainClass();
+            }
+            return _mainClass;
+        }}
         private static List<AudioSource> PlayAndDestroyList = new();
         /// <summary>
         /// This looks at a numeric input field and sets the number if it's too high or too low.
@@ -134,81 +140,87 @@ namespace Deluxia.Unity{
                 return checkNum;
             }
         }
+
+        public static IEnumerator WaitConsistant(float start, float end, float move, Action<float> doAtMiddle, Action<float> doAtEnd = null){
+            float timeAccumulator = 0f, yourActionTimeStep = 0.01f;
+            doAtMiddle?.Invoke(start);
+            for(float i = start;i <= end;) {
+                yield return null;
+                timeAccumulator += Time.deltaTime;
+                while (timeAccumulator > yourActionTimeStep) { 
+                    timeAccumulator -= yourActionTimeStep; 
+                    doAtMiddle?.Invoke(i);
+                    i += move;
+                    // Execute your desired logic 
+                }
+            }
+            doAtMiddle?.Invoke(end);
+            doAtEnd?.Invoke(end);
+        }
         public static IEnumerator Fade2Can(CanvasGroup CA,CanvasGroup CB,float speed) {
             float opacityT = 0f;
             float inverseT = 255f;
             CA.GetComponent<Canvas>().enabled = true;
             CA.interactable = true;
             CB.interactable = false;
-            while(opacityT < 255) {
-                //Debug.Log(opacityT);
+            yield return MainClass.StartCoroutine(WaitConsistant(0,255,speed,delegate(float alpha){ 
                 CA.alpha = opacityT / 255f;
                 CB.alpha = inverseT / 255f;
-                opacityT += speed;
-                inverseT -= speed;
-                yield return new WaitForSeconds(0.01f);
-            }
+                opacityT = alpha;
+                inverseT = 255-alpha;} ));
             CB.GetComponent<Canvas>().enabled = false;
-            CA.alpha = 1;
-            CB.alpha = 0;
+            // CA.alpha = 1;
+            // CB.alpha = 0;
         }
 
         public static IEnumerator Move2Rect(RectTransform RA,RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
-            float spot = 0;
 			speed /= 100f;
 			if(disableOnDone) {
                 RA.gameObject.SetActive(true);
             }
             Vector3 middle = RB.anchoredPosition;
-            while(spot <= 1) {
-                //Debug.Log(opacityT);
-                spot += speed;
-                RA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
-                RB.anchoredPosition = Vector3.Lerp(middle,BEnd,spot);
-                yield return new WaitForSeconds(0.01f);
-            }
-            if(disableOnDone) {
-                RB.gameObject.SetActive(false);
-            }
+            yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,
+            delegate(float value){ 
+                RA.anchoredPosition = Vector3.Lerp(AStart,AEnd,value);
+                RB.anchoredPosition = Vector3.Lerp(middle,BEnd,value);},
+            delegate{
+                if(disableOnDone) {
+                RB.gameObject.SetActive(false);}
+            }));
+            
         }
         public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
-            float spot = 0;
 			speed /= 100f;
-			while(spot <= 1) {
+			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,
+            delegate(float value){
                 //Debug.Log(opacityT);
                 if(useLocal) {
-                    CA.localPosition = Vector3.Lerp(AStart,AEnd,spot);
+                    CA.localPosition = Vector3.Lerp(AStart,AEnd,value);
                 }
                 else {
-                    CA.position = Vector3.Lerp(AStart,AEnd,spot);
+                    CA.position = Vector3.Lerp(AStart,AEnd,value);
                 }
-                spot += speed;
-                yield return new WaitForSeconds(0.01f);
-            }
-            if(useLocal) {
-                CA.localPosition = AEnd;
-            }
-            else {
-                CA.position = AEnd;
-            }
-            if(disableOnDone) {
-                CA.gameObject.SetActive(false);
-            }
+            },
+            delegate{
+                if(disableOnDone) {
+                    CA.gameObject.SetActive(false);
+                }
+            }));
         }
         public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone, Action afterDone = null) {
-            float spot = 0;
 			speed /= 100f;
-			while(spot <= 1) {
+			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,
+            delegate(float value){
                 //Debug.Log(opacityT);
-                CA.localScale = Vector3.Lerp(AStart,AEnd,spot);
-                spot += speed;
-                yield return new WaitForSeconds(0.01f);
-            }
-			CA.localScale = AEnd;
-			if(disableOnDone) {
-                CA.gameObject.SetActive(false);
-            }
-			afterDone?.Invoke();
+                CA.localScale = Vector3.Lerp(AStart,AEnd,value);
+            },
+            delegate{
+                if(disableOnDone) {
+                    CA.gameObject.SetActive(false);
+                }
+                afterDone?.Invoke();
+            }));
+			
 		}
         public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
             float spot = 0;
@@ -229,35 +241,34 @@ namespace Deluxia.Unity{
             }
         }
         public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
-            float spot = 0;
 			speed /= 100f;
-			while(spot <= 1) {
+			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,delegate(float value){
                 //Debug.Log(opacityT);
                 if(CA == null) {
-                    yield break;
+                    return;
                 }
-                spot += speed;
-                CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,spot);
-                yield return new WaitForSeconds(0.01f);
-            }
+                CA.anchoredPosition = Vector3.Lerp(AStart,AEnd,value);
+            },delegate{
             if(disableOnDone) {
                 CA.gameObject.SetActive(false);
             }
+            }));
         }
 		
 		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
-            float spot = 0;
             Vector3 start = CA.anchoredPosition;
 			speed /= 100f;
-			while(spot <= 1) {
+			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,delegate(float value){
                 //Debug.Log(opacityT);
-                spot += speed;
-                CA.anchoredPosition = Vector3.Lerp(start,AEnd,spot);
-                yield return new WaitForSeconds(0.01f);
-            }
+                if(CA == null) {
+                    return;
+                }
+                CA.anchoredPosition = Vector3.Lerp(start,AEnd,value);
+            },delegate{
             if(disableOnDone) {
                 CA.gameObject.SetActive(false);
             }
+            }));
         }
 		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 start,Vector2 AEnd,float speed) {
 			float spot = 0;
@@ -270,15 +281,12 @@ namespace Deluxia.Unity{
 			}
 		}
 		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 AEnd,float speed) {
-			float spot = 0;
 			Vector2 start = CA.sizeDelta;
 			speed /= 100f;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				CA.sizeDelta = Vector2.Lerp(start,AEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
+            yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,delegate(float value){
+                //Debug.Log(opacityT);
+                CA.sizeDelta = Vector2.Lerp(start,AEnd,value);
+            }));
 		}
         public static IEnumerator MovePivot(RectTransform CA,Vector2 AStart,Vector2 AEnd,float speed,bool disableOnDone) {
 			float spot = 0;
@@ -569,8 +577,8 @@ namespace Deluxia.Unity{
             return toSend;
         }
         private static void FindMainClass() {
-            if(mainClass == null) {
-                mainClass = GameObject.Find("GameScriptsManager").GetComponent<MonoBehaviour>();
+            if(_mainClass == null) {
+                _mainClass = Object.FindAnyObjectByType<MonoBehaviour>();
             }
         }
         /// <summary>
