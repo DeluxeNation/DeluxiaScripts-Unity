@@ -26,7 +26,7 @@ namespace Deluxia.Unity{
     public static class DeluxiaUnityMethods {
         private static MonoBehaviour _mainClass;
         public static MonoBehaviour MainClass {get{
-            if(_mainClass == null){
+            if(_mainClass == null || !_mainClass.gameObject.activeInHierarchy){
                 FindMainClass();
             }
             return _mainClass;
@@ -140,12 +140,27 @@ namespace Deluxia.Unity{
                 return checkNum;
             }
         }
-
+        ///https://github.com/markv12/ManagingCoroutines/tree/master
+        private static IEnumerator GenericAnimationRoutine(float duration, Action<float> changeFunction, Action onComplete = null) {
+            float elapsedTime = 0;
+            float progress = 0;
+            while (progress <= 1) {
+                changeFunction(progress);
+                elapsedTime += Time.unscaledDeltaTime;
+                progress = elapsedTime / duration;
+                yield return null;
+            }
+            changeFunction(1);
+            onComplete?.Invoke();
+        }
+        public static Coroutine StartRoutine(float duration, Action<float> changeFunction, Action onComplete = null){
+            return MainClass.StartCoroutine(GenericAnimationRoutine(duration,changeFunction,onComplete));
+        }
         public static IEnumerator WaitConsistant(float start, float end, float move, Action<float> doAtMiddle, Action<float> doAtEnd = null){
-            float timeAccumulator = 0f, yourActionTimeStep = 0.01f;
+            float timeAccumulator = 0f, yourActionTimeStep = 0.0166f;
             doAtMiddle?.Invoke(start);
             for(float i = start;i <= end;) {
-                yield return null;
+                yield return new WaitForSeconds(yourActionTimeStep);
                 timeAccumulator += Time.deltaTime;
                 while (timeAccumulator > yourActionTimeStep) { 
                     timeAccumulator -= yourActionTimeStep; 
@@ -157,29 +172,29 @@ namespace Deluxia.Unity{
             doAtMiddle?.Invoke(end);
             doAtEnd?.Invoke(end);
         }
-        public static IEnumerator Fade2Can(CanvasGroup CA,CanvasGroup CB,float speed) {
-            float opacityT = 0f;
-            float inverseT = 255f;
+        public static Coroutine Fade2Can(CanvasGroup CA,CanvasGroup CB,float speed) {
             CA.GetComponent<Canvas>().enabled = true;
             CA.interactable = true;
             CB.interactable = false;
-            yield return MainClass.StartCoroutine(WaitConsistant(0,255,speed,delegate(float alpha){ 
-                CA.alpha = opacityT / 255f;
-                CB.alpha = inverseT / 255f;
-                opacityT = alpha;
-                inverseT = 255-alpha;} ));
-            CB.GetComponent<Canvas>().enabled = false;
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float alpha){ 
+                CA.alpha =  Mathf.Lerp(0,1,alpha);
+                CB.alpha = Mathf.Lerp(1,0,alpha);
+                //opacityT = alpha;
+                //inverseT = 255-alpha;
+            },delegate{
+                CB.GetComponent<Canvas>().enabled = false;   
+            } ));
+            
             // CA.alpha = 1;
             // CB.alpha = 0;
         }
 
-        public static IEnumerator Move2Rect(RectTransform RA,RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
-			speed /= 100f;
+        public static Coroutine Move2Rect(RectTransform RA,RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
 			if(disableOnDone) {
                 RA.gameObject.SetActive(true);
             }
             Vector3 middle = RB.anchoredPosition;
-            yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,
             delegate(float value){ 
                 RA.anchoredPosition = Vector3.Lerp(AStart,AEnd,value);
                 RB.anchoredPosition = Vector3.Lerp(middle,BEnd,value);},
@@ -189,9 +204,8 @@ namespace Deluxia.Unity{
             }));
             
         }
-        public static IEnumerator Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
-			speed /= 100f;
-			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,
+        public static Coroutine Move(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone,bool useLocal) {
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,
             delegate(float value){
                 //Debug.Log(opacityT);
                 if(useLocal) {
@@ -207,9 +221,8 @@ namespace Deluxia.Unity{
                 }
             }));
         }
-        public static IEnumerator Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone, Action afterDone = null) {
-			speed /= 100f;
-			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,
+        public static Coroutine Scale(Transform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone, Action afterDone = null) {
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,
             delegate(float value){
                 //Debug.Log(opacityT);
                 CA.localScale = Vector3.Lerp(AStart,AEnd,value);
@@ -222,27 +235,22 @@ namespace Deluxia.Unity{
             }));
 			
 		}
-        public static IEnumerator Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
-            float spot = 0;
-			speed /= 100f;
+        public static Coroutine Move2(Transform A,Transform B,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
 			if(disableOnDone) {
                 A.gameObject.SetActive(true);
             }
             Vector3 middle = B.position;
-            while(spot <= 1) {
-                //Debug.Log(opacityT);
-                spot += speed;
-                A.position = Vector3.Lerp(AStart,AEnd,spot);
-                B.position = Vector3.Lerp(middle,BEnd,spot);
-                yield return new WaitForSeconds(0.01f);
-            }
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,
+            delegate(float value){
+                A.position = Vector3.Lerp(AStart,AEnd,value);
+                B.position = Vector3.Lerp(middle,BEnd,value);
+            },delegate{
             if(disableOnDone) {
                 B.gameObject.SetActive(false);
-            }
+            }}));
         }
-        public static IEnumerator MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
-			speed /= 100f;
-			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,delegate(float value){
+        public static Coroutine MoveRect(RectTransform CA,Vector3 AStart,Vector3 AEnd,float speed,bool disableOnDone) {
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
                 //Debug.Log(opacityT);
                 if(CA == null) {
                     return;
@@ -255,10 +263,9 @@ namespace Deluxia.Unity{
             }));
         }
 		
-		public static IEnumerator MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
+		public static Coroutine MoveRect(RectTransform CA,Vector3 AEnd,float speed,bool disableOnDone) {
             Vector3 start = CA.anchoredPosition;
-			speed /= 100f;
-			yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,delegate(float value){
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
                 //Debug.Log(opacityT);
                 if(CA == null) {
                     return;
@@ -270,50 +277,37 @@ namespace Deluxia.Unity{
             }
             }));
         }
-		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 start,Vector2 AEnd,float speed) {
-			float spot = 0;
-			speed /= 100f;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				CA.sizeDelta = Vector2.Lerp(start,AEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
+		public static Coroutine ChangeSizeRect(RectTransform CA,Vector2 start,Vector2 AEnd,float speed) {
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
+				CA.sizeDelta = Vector2.Lerp(start,AEnd,value);
+			}));
 		}
-		public static IEnumerator ChangeSizeRect(RectTransform CA,Vector2 AEnd,float speed) {
+		public static Coroutine ChangeSizeRect(RectTransform CA,Vector2 AEnd,float speed) {
 			Vector2 start = CA.sizeDelta;
-			speed /= 100f;
-            yield return MainClass.StartCoroutine(WaitConsistant(0,1,speed,delegate(float value){
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
                 //Debug.Log(opacityT);
                 CA.sizeDelta = Vector2.Lerp(start,AEnd,value);
             }));
 		}
-        public static IEnumerator MovePivot(RectTransform CA,Vector2 AStart,Vector2 AEnd,float speed,bool disableOnDone) {
-			float spot = 0;
-			speed /= 100f;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				CA.pivot = Vector2.Lerp(AStart,AEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(disableOnDone) {
-				CA.gameObject.SetActive(false);
-			}
+        public static Coroutine MovePivot(RectTransform CA,Vector2 AStart,Vector2 AEnd,float speed,bool disableOnDone) {
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
+				CA.pivot = Vector2.Lerp(AStart,AEnd,value);
+			},delegate{
+                if(disableOnDone) {
+                    CA.gameObject.SetActive(false);
+                }
+            }));
+			
 		}
-		public static IEnumerator MovePivot(RectTransform CA,Vector2 AEnd,float speed,bool disableOnDone) {
+		public static Coroutine MovePivot(RectTransform CA,Vector2 AEnd,float speed,bool disableOnDone) {
             Vector2 AStart = CA.pivot;
-			float spot = 0;
-			speed /= 100f;
-			while(spot <= 1) {
-				//Debug.Log(opacityT);
-				spot += speed;
-				CA.pivot = Vector2.Lerp(AStart,AEnd,spot);
-				yield return new WaitForSeconds(0.01f);
-			}
-			if(disableOnDone) {
-				CA.gameObject.SetActive(false);
-			}
+			return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
+				CA.pivot = Vector2.Lerp(AStart,AEnd,value);
+			},delegate{
+                if(disableOnDone) {
+                    CA.gameObject.SetActive(false);
+                }
+            }));
 		}
 		public static IEnumerator Move2Can(CanvasGroup CA,CanvasGroup CB,Vector3 AStart,Vector3 BEnd,float speed,AnimationCurve curve) {
             float spot = 0;
@@ -338,77 +332,27 @@ namespace Deluxia.Unity{
                 canB.GetComponent<Canvas>().enabled = false;
             }
         }
-        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn) {
+        public static Coroutine FadeCan(CanvasGroup C,float speed,bool fadeIn) {
             C.blocksRaycasts = fadeIn;
-            float opacity = fadeIn ? 0f : 255f;
+            float start = fadeIn?0:1, end = fadeIn?1:0;
             if(C.TryGetComponent(out Canvas can)){
                 can.enabled = true;
             }
-            do {
-                C.alpha = opacity / 255f;
-                opacity += speed * (fadeIn ? 1 : -1);
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            C.alpha = fadeIn ? 1 : 0;
-			if(can != null) {
-				can.enabled = fadeIn;
-			}
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float alpha){ 
+                C.alpha =  Mathf.Lerp(start,end,alpha);
+            },delegate{
+                C.alpha = fadeIn ? 1 : 0;
+                if(can != null) {
+                    can.enabled = fadeIn;
+                }
+            }));
 		}
-        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action method) {
-            float opacity = fadeIn ? 0f : 255f;
-			if(C.TryGetComponent(out Canvas can)) {
-				can.enabled = true;
-			}
-			do {
-                C.alpha = opacity / 255f;
-                opacity += speed * (fadeIn ? 1 : -1);
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            C.alpha = fadeIn ? 1 : 0;
-			if(can != null) {
-				can.enabled = fadeIn;
-			}
-			method();
-        }
-        public static IEnumerator FadeCan(CanvasGroup C,float speed,bool fadeIn,System.Action<string> method,string param) {
-            float opacity = fadeIn ? 0f : 255f;
-            if(C.TryGetComponent(out Canvas can)) {
-				can.enabled = true;
-			}
-            do {
-                C.alpha = opacity / 255f;
-                opacity += speed * (fadeIn ? 1 : -1);
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            C.alpha = fadeIn ? 1 : 0;
-			if(can != null) {
-				can.enabled = fadeIn;
-			}
-			method(param);
-        }
         public static IEnumerator FadeCanInAndOut(CanvasGroup C,bool blockRaycasts,float speed,float time) {
-            float opacity = 0f;
             C.blocksRaycasts = blockRaycasts;
-            if(C.TryGetComponent(out Canvas can)) {
-				can.enabled = true;
-			}
-            do {
-                C.alpha = opacity / 255f;
-                opacity += speed;
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            C.alpha = 1;
+            yield return FadeCan(C,speed,true);
             yield return new WaitForSeconds(time);
-            do {
-                C.alpha = opacity / 255f;
-                opacity += speed * -1;
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            C.alpha = 0;
+            yield return FadeCan(C,speed,false);
             C.blocksRaycasts = false;
-			if(can != null) {
-                can.enabled = false;
-			}
 		}
         /// <summary>
         /// Fade a Text Mesh Pro object.
@@ -417,14 +361,11 @@ namespace Deluxia.Unity{
         /// <param name="speed">Multiply the speed by this amount.</param>
         /// <param name="fadeIn">Choose if this fades in or out.</param>
         /// <returns></returns>
-        public static IEnumerator FadeTMP(TMP_Text text,float speed,bool fadeIn) {
-            float opacity = fadeIn ? 0f : 255f;
-            do {
-                text.alpha = opacity / 255f;
-                opacity += speed * (fadeIn ? 1 : -1);
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            text.alpha = fadeIn ? 1 : 0;
+        public static Coroutine FadeTMP(TMP_Text text,float speed,bool fadeIn) {
+            float start = fadeIn?0:1, end = fadeIn?1:0;
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
+                text.alpha = Mathf.Lerp(start,end,value);
+            }));
 
         }
         /// <summary>
@@ -434,25 +375,19 @@ namespace Deluxia.Unity{
         /// <param name="speed">Multiply the speed by this amount.</param>
         /// <param name="fadeIn">Choose if this fades in or out.</param>
         /// <returns></returns>
-        public static IEnumerator FadeImage(Image img,float speed,bool fadeIn) {
+        public static Coroutine FadeImage(Image img,float speed,bool fadeIn) {
             float opacity = fadeIn ? 0f : 255f;
-            do {
-                img.color = new Color(img.color.r,img.color.g,img.color.b,opacity / 255f);
-                opacity += speed * (fadeIn ? 1 : -1);
-                yield return new WaitForSeconds(0.01f);
-            } while(opacity < 255 && opacity > 0);
-            img.color = new Color(img.color.r,img.color.g,img.color.b,fadeIn ? 1 : 0);
+            Color start = img.color;
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
+                img.color = Color.Lerp(start,new Color(img.color.r,img.color.g,img.color.b,fadeIn?1:0),value);
+            }));
 
         }
-        public static IEnumerator ChangeColor(Graphic graphic,Color endColor,float speed) {
-            float spot = 0;
-            speed /= 100;
-            while(spot <= 1) {
-                //Debug.Log(opacityT);
-                spot += speed;
-                graphic.color = Color.Lerp(graphic.color,endColor,spot);
-                yield return new WaitForSeconds(0.01f);
-            }
+        public static Coroutine ChangeColor(Graphic graphic,Color end,float speed) {
+            Color start = graphic.color;
+            return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float value){
+                graphic.color = Color.Lerp(start,end,value);
+            }));
         }
         /// <summary>
         /// WARNING!! EXPERIMENTAL!!
@@ -578,7 +513,7 @@ namespace Deluxia.Unity{
         }
         private static void FindMainClass() {
             if(_mainClass == null) {
-                _mainClass = Object.FindAnyObjectByType<MonoBehaviour>();
+                _mainClass = GameObject.FindGameObjectWithTag("Main").GetComponent<MonoBehaviour>();
             }
         }
         /// <summary>
@@ -589,34 +524,34 @@ namespace Deluxia.Unity{
         /// <param name="clip">The new audio clip.</param>
         /// <param name="volume">The volume to end at.</param>
         /// <returns></returns>
-        public static AudioSource ChangeSong(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,float speed,bool destroyWhenDone) {
+        public static AudioSource ChangeSong(this AudioSource audio,AudioClip clip,float volume,float speed,bool destroyWhenDone) {
             if(clip == null) {
-                main.StartCoroutine(FadeOutAudio(audio,0,speed,false));
+                FadeOutAudio(audio,speed,false);
                 return audio;
             }
             else {
-				main.StartCoroutine(FadeOutAudio(audio,0,speed,destroyWhenDone));
+				FadeOutAudio(audio,speed,destroyWhenDone);
 				AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
                 audio2.loop = audio.loop;
                 audio2.playOnAwake = false;
 				audio2.volume = 0;
-				main.StartCoroutine(FadeInAudio(audio2,clip,0,speed,volume));
+				FadeInAudio(audio2,clip,speed,volume);
 				return audio2;
 			}
 
         }
-        public static AudioSource ChangeSongMatchDuration(this AudioSource audio,MonoBehaviour main,AudioClip clip,float volume,float speed,bool destroyWhenDone) {
+        public static AudioSource ChangeSongMatchDuration(this AudioSource audio,AudioClip clip,float volume,float speed,bool destroyWhenDone) {
             if(clip == null) {
-                main.StartCoroutine(FadeOutAudio(audio,0,speed,false));
+                FadeOutAudio(audio,speed,false);
                 return audio;
             }
             else {
-				main.StartCoroutine(FadeOutAudio(audio,0,speed,destroyWhenDone));
+				FadeOutAudio(audio,speed,destroyWhenDone);
 				AudioSource audio2 = audio.gameObject.AddComponent<AudioSource>();
                 audio2.loop = audio.loop;
                 audio2.playOnAwake = false;
 				audio2.volume = 0;
-				main.StartCoroutine(FadeInAudio(audio2,clip,0,speed,volume,audio.time));
+				FadeInAudio(audio2,clip,speed,volume,audio.time);
 				return audio2;
 			}
 
@@ -628,19 +563,14 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <param name="destroyWhenDone">Destroy the AudioSource when the fade out is finished.</param>
-        public static IEnumerator FadeOutAudio(AudioSource audio,float delay,float speed,bool destroyWhenDone) {
-            yield return new WaitForSeconds(delay);
-            float spot = 0f;
+        public static Coroutine FadeOutAudio(AudioSource audio,float speed,bool destroyWhenDone) {
             float maxVol = audio.volume;
-            speed /= 100;
-            while(spot < 1) {
+            return DeluxiaUnityMethods.StartRoutine(speed,delegate(float i){
                 if(audio == null){
-                    break;
+                    return;
                 }
-                audio.volume = Mathf.Lerp(maxVol,0,spot);
-                spot+=speed;
-                yield return new WaitForSeconds(0.01f);
-            }
+                audio.volume = Mathf.Lerp(maxVol,0,i);
+            },delegate{
             if(audio != null){
                 if(destroyWhenDone) {
                     Object.Destroy(audio);
@@ -648,7 +578,7 @@ namespace Deluxia.Unity{
                 else {
                     audio.Stop();
                 }
-            }
+            }});
         }
         /// <summary>
         /// Provides a fade in effect for audio.
@@ -658,18 +588,13 @@ namespace Deluxia.Unity{
         /// <param name="delay">Have this wait a bit before executing.</param>
         /// <param name="maxVol">The volume to end at.</param>
         /// <returns></returns>
-        public static IEnumerator FadeInAudio(AudioSource audio,AudioClip clip,float delay,float speed,float maxVol, float startTime = 0f) {
-			yield return new WaitForSeconds(delay);
-			float spot = 0f;
+        public static Coroutine FadeInAudio(AudioSource audio,AudioClip clip,float speed,float maxVol, float startTime = 0f) {
             audio.clip = clip;
             audio.time = startTime;
             audio.Play();
-			speed /= 100;
-			while(spot < 1) {
-				audio.volume = Mathf.Lerp(0,maxVol,spot);
-				spot += speed;
-				yield return new WaitForSeconds(0.01f);
-			}
+			return StartRoutine(speed,delegate(float i){
+				audio.volume = Mathf.Lerp(0,maxVol,i);
+			});
 		}
         public static float[] ToFloat(this Vector3 V3) {
             return new float[] { V3.x,V3.y,V3.z };
