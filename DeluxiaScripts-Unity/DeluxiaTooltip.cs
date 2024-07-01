@@ -40,6 +40,15 @@ namespace Deluxia.Unity {
                 main.gameObject.SetActive(false);
             }
         }
+        public static string CurrentHeader(){
+            return main.header.text;
+        }
+        public static string CurrentContent(){
+            return main.content.text;
+        }
+        public static bool IsVisible(){
+            return main.gameObject.activeInHierarchy;
+        }
 
         // Update is called once per frame
         void Update() {
