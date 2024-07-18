@@ -12,6 +12,7 @@ namespace Deluxia.Unity {
         public int hSizeLimit, cSizeLimit;
         private static DeluxiaTooltip main;
         private static RectTransform mainTransform;
+        private static bool hidCursor = false;
         // Start is called before the first frame update
         void Awake() {
             if(Application.isPlaying) {
@@ -32,10 +33,14 @@ namespace Deluxia.Unity {
             float pivotX = Mpos.x / Screen.width, pivotY = Mpos.y / Screen.height;
             mainTransform.pivot = new Vector2(pivotX * 1.5f,pivotY * 1.5f);
             mainTransform.position = Mpos;
+            hidCursor = true;
 			Cursor.visible = false;
 		}
         public static void Hide() {
-            Cursor.visible = true;
+            if(hidCursor){
+                hidCursor = false;
+                Cursor.visible = true;
+            }
             if(main != null) {
                 main.gameObject.SetActive(false);
             }
