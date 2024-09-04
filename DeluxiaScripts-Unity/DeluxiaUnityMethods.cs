@@ -174,8 +174,8 @@ namespace Deluxia.Unity{
         }
         public static Coroutine Fade2Can(CanvasGroup CA,CanvasGroup CB,float speed) {
             CA.GetComponent<Canvas>().enabled = true;
-            CA.interactable = true;
-            CB.interactable = false;
+            CA.blocksRaycasts = true;
+            CB.blocksRaycasts = false;
             return MainClass.StartCoroutine(GenericAnimationRoutine(speed,delegate(float alpha){ 
                 CA.alpha =  Mathf.Lerp(0,1,alpha);
                 CB.alpha = Mathf.Lerp(1,0,alpha);
@@ -557,7 +557,7 @@ namespace Deluxia.Unity{
 
         }
         /// <summary>
-        /// Provides a fade in effect for audio.
+        /// Provides a fade out effect for audio.
         /// </summary>
         /// <param name="audio">The AudioSource to fade out. Use one that's currently playing something.</param>
         /// <param name="delay">Have this wait a bit before executing.</param>
@@ -703,6 +703,9 @@ namespace Deluxia.Unity{
         }
         public static int PlayAndDestroyCount(){
             return PlayAndDestroyList.Count;
+        }
+        public static int PlayAndDestroyCount(AudioClip clip){
+            return PlayAndDestroyList.Count(x=>x.clip == clip);
         }
         public static IEnumerator StopAndDestroy(this ParticleSystem system, bool gameObjectToo = false) {
             system.Stop();
