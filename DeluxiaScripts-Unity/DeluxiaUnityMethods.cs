@@ -190,9 +190,7 @@ namespace Deluxia.Unity{
         }
 
         public static Coroutine Move2Rect(RectTransform RA,RectTransform RB,Vector3 AStart,Vector3 AEnd,Vector3 BEnd,float speed,bool disableOnDone) {
-			if(disableOnDone) {
-                RA.gameObject.SetActive(true);
-            }
+            RA.gameObject.SetActive(true);
             Vector3 middle = RB.anchoredPosition;
             return MainClass.StartCoroutine(GenericAnimationRoutine(speed,
             delegate(float value){ 
