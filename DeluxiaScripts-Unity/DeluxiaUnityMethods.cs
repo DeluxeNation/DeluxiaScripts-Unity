@@ -748,5 +748,53 @@ namespace Deluxia.Unity{
                 return "/" + current.name;
             return current.parent.GetPath() + "/" + current.name;
         }
+        public static void SetupSelectablesUpToDown(this Selectable[] selectables, bool autoselectFirst) {
+            if(selectables == null || selectables.Length == 0) {
+                return;
+            }
+			if(selectables.Length == 1) {
+				if(autoselectFirst) {
+					selectables[0].Select();
+				}
+				return;
+			}
+			for(int i = 0;i < selectables.Length;i++) {
+				Navigation n = selectables[i].navigation;
+				if(i != selectables.Length - 1) {
+					n.selectOnDown = selectables[i + 1];
+				}
+				if(i != 0) {
+					n.selectOnUp = selectables[i - 1];
+				}
+				selectables[i].navigation = n;
+			}
+            if(autoselectFirst) {
+                selectables[0].Select();
+            }
+		}
+		public static void SetupSelectablesLeftToRight(this Selectable[] selectables,bool autoselectFirst) {
+			if(selectables == null || selectables.Length == 0) {
+				return;
+			}
+            if(selectables.Length == 1) {
+                if(autoselectFirst) {
+                    selectables[0].Select();
+                }
+                return;
+            }
+			for(int i = 0;i < selectables.Length;i++) {
+				Navigation n = selectables[i].navigation;
+				if(i != selectables.Length - 1) {
+					n.selectOnRight = selectables[i + 1];
+				}
+				if(i != 0) {
+					n.selectOnLeft = selectables[i - 1];
+				}
+				selectables[i].navigation = n;
+			}
+			if(autoselectFirst) {
+				selectables[0].Select();
+			}
+		}
 	}
 }
