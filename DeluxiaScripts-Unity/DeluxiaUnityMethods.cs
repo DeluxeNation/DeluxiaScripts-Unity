@@ -27,7 +27,7 @@ namespace Deluxia.Unity{
         private static MonoBehaviour _mainClass;
         public static MonoBehaviour MainClass {get{
             if(_mainClass == null || !_mainClass.gameObject.activeInHierarchy){
-                FindMainClass();
+                _mainClass = GameObject.FindGameObjectWithTag("Main").GetComponent<MonoBehaviour>();
             }
             return _mainClass;
         }}
@@ -508,11 +508,6 @@ namespace Deluxia.Unity{
                 Object.Destroy(original.gameObject);
             }
             return toSend;
-        }
-        private static void FindMainClass() {
-            if(_mainClass == null) {
-                _mainClass = GameObject.FindGameObjectWithTag("Main").GetComponent<MonoBehaviour>();
-            }
         }
         /// <summary>
         /// Stop playing one audio clip and start playing another. This destroys the original AudioSource
